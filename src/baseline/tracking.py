@@ -1,7 +1,19 @@
 """MLflow tracking utilities."""
 
 import mlflow
+from hydra.utils import to_absolute_path
 from omegaconf import DictConfig, OmegaConf
+
+
+def resolve_tracking_uri(uri: str) -> str:
+    """Resolve tracking URI to absolute path only for filesystem paths.
+
+    URIs with a scheme (sqlite://, http://, etc.) are returned as-is because
+    to_absolute_path() would corrupt the scheme prefix.
+    """
+    if "://" in uri:
+        return uri
+    return to_absolute_path(uri)
 
 
 def flatten_config(cfg: dict, parent_key: str = "", sep: str = ".") -> dict[str, object]:

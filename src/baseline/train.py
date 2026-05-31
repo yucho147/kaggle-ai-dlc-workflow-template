@@ -23,7 +23,7 @@ from omegaconf import DictConfig
 from baseline.data import load_train_data, save_submission
 from baseline.evaluate import run_cross_validation
 from baseline.model import build_model
-from baseline.tracking import log_config, log_cv_results
+from baseline.tracking import log_config, log_cv_results, resolve_tracking_uri
 
 
 def setup_logger(log_path: Path) -> None:
@@ -51,7 +51,7 @@ def main(cfg: DictConfig) -> None:
     np.random.seed(cfg.project.seed)
 
     # --- MLflow ---
-    mlflow.set_tracking_uri(to_absolute_path(cfg.mlflow.tracking_uri))
+    mlflow.set_tracking_uri(resolve_tracking_uri(cfg.mlflow.tracking_uri))
     mlflow.set_experiment(cfg.mlflow.experiment_name)
 
     with mlflow.start_run(run_name=run_name):
