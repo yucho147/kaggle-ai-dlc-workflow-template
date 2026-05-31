@@ -19,7 +19,14 @@ cd <your-project>
 uv sync
 ```
 
-3. Coding Agent を起動して [docs/03_prompt_templates.md](docs/03_prompt_templates.md) の開始プロンプトを貼る
+3. Coding Agent を起動して、やりたいことを話しかける
+
+```
+titanic コンペの参加準備をしたい
+異常検知の PoC を始めたい
+```
+
+どう話しかければいいか迷ったときは [docs/03_prompt_templates.md](docs/03_prompt_templates.md) を参考にしてください。
 
 > **このテンプレートリポジトリを直接の作業場として使わないでください。**
 > `aidlc-docs/` はプロジェクト固有のドキュメントを書く場所です。テンプレート側を汚染しないよう、新規プロジェクトごとに別リポジトリを作ってください。
@@ -47,11 +54,19 @@ uv sync
 `aidlc-docs/` はすでにプレースホルダーが入った状態で含まれています。そのまま Coding Agent を起動して作業を開始してください。
 
 最短手順は [docs/02_quickstart.md](docs/02_quickstart.md) を参照してください。
-coding agent に貼る日本語プロンプトは [docs/03_prompt_templates.md](docs/03_prompt_templates.md) にまとめています。
 
 ## Coding Agent での実行
 
-Codex、GitHub Copilot CLI、Claude Code での実行方法は [docs/01_agent_execution_guide.md](docs/01_agent_execution_guide.md) にまとめています。
+Codex、GitHub Copilot CLI、Claude Code を起動して、やりたいことを普通に話しかけるだけで動きます。
+
+```
+titanic コンペの参加準備をしたい
+異常検知の PoC を始めたい
+```
+
+どう話しかければいいか迷ったときは [docs/03_prompt_templates.md](docs/03_prompt_templates.md) に用途別のプロンプト例をまとめています。
+
+各ツールのセットアップは [docs/01_agent_execution_guide.md](docs/01_agent_execution_guide.md) を参照してください。
 
 Claude Code 向けの入口は [CLAUDE.md](CLAUDE.md)、GitHub Copilot CLI 向けの入口は [COPILOT.md](COPILOT.md) と [.github/copilot-instructions.md](.github/copilot-instructions.md) にも置いています。
 
