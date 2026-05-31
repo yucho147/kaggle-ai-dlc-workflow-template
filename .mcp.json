@@ -12,9 +12,5 @@
       "type": "http",
       "url": "https://huggingface.co/mcp"
     },
-    "paperswithcode": {
-      "command": "npx",
-      "args": ["-y", "@hbg/mcp-paperswithcode"]
-    }
   }
 }
