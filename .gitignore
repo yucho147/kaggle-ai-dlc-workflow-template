@@ -15,6 +15,7 @@ outputs/models/*
 outputs/predictions/*
 outputs/submissions/*
 outputs/reports/*
+outputs/logs/
 notebooks_external/*
 
 # Keep directory placeholders
@@ -27,6 +28,13 @@ notebooks_external/*
 !outputs/submissions/.gitkeep
 !outputs/reports/.gitkeep
 !notebooks_external/.gitkeep
+
+# MLflow
+mlruns/
+mlruns.db
+
+# Hydra outputs (date-based run directories)
+outputs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
 
 # Local files
 .DS_Store

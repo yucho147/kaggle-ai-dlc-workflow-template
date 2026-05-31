@@ -1,25 +1,30 @@
 project:
-  name: TBD
+  name: baseline
   seed: 42
 
 data:
   raw_dir: data/raw
   processed_dir: data/processed
-  train_file: TBD
-  test_file: TBD
+  train_file: TBD          # e.g. titanic/train.csv
+  test_file: TBD           # e.g. titanic/test.csv
   sample_submission_file: TBD
-  target: TBD
-  id_column: TBD
+  target: TBD              # e.g. Survived
+  id_column: TBD           # e.g. PassengerId
 
 validation:
-  strategy: TBD
+  strategy: stratified_kfold  # stratified_kfold | kfold
   n_splits: 5
-  metric: TBD
+  metric: accuracy            # sklearn scoring string
 
 model:
-  name: TBD
+  name: random_forest
   params: {}
 
 output:
   dir: outputs
+
+mlflow:
+  experiment_name: ${project.name}
+  tracking_uri: sqlite:///mlruns.db
+  run_name: baseline
 
