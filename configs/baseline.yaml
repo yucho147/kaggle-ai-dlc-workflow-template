@@ -1,0 +1,25 @@
+project:
+  name: TBD
+  seed: 42
+
+data:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  train_file: TBD
+  test_file: TBD
+  sample_submission_file: TBD
+  target: TBD
+  id_column: TBD
+
+validation:
+  strategy: TBD
+  n_splits: 5
+  metric: TBD
+
+model:
+  name: TBD
+  params: {}
+
+output:
+  dir: outputs
+

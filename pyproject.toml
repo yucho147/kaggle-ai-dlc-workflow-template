@@ -1,0 +1,11 @@
+[project]
+name = "kaggle-mcp-workflow-template"
+version = "0.1.0"
+description = "AI-DLC style workflow template for Kaggle and technical research projects."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.ruff]
+line-length = 100
+

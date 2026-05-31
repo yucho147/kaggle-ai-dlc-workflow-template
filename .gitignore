@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Data and outputs
+data/raw/*
+data/interim/*
+data/processed/*
+data/external/*
+outputs/models/*
+outputs/predictions/*
+outputs/submissions/*
+outputs/reports/*
+notebooks_external/*
+
+# Keep directory placeholders
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+!outputs/models/.gitkeep
+!outputs/predictions/.gitkeep
+!outputs/submissions/.gitkeep
+!outputs/reports/.gitkeep
+!notebooks_external/.gitkeep
+
+# Local files
+.DS_Store
+.env
+.env.*
+kaggle.json
+
