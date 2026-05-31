@@ -296,12 +296,8 @@ kaggle kernels pull <owner>/<kernel> -p notebooks_external/<kernel>
 技術テーマ
 例:
 
-- 気象場の自己教師あり表現学習
-- 類似日検索
 - 衛星画像セグメンテーション
 - 時系列予測
-- 大雪事例検索
-- 道路交通障害予測
 
 実行内容:
 
