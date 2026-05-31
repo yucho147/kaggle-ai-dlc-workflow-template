@@ -1,11 +1,33 @@
 [project]
-name = "kaggle-mcp-workflow-template"
+name = "kaggle-ai-dlc-workflow-template"
 version = "0.1.0"
 description = "AI-DLC style workflow template for Kaggle and technical research projects."
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = []
+requires-python = ">=3.14"
+dependencies = [
+    "kaggle>=2.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "jedi>=0.20.0",
+    "pytest>=9.0.3",
+    "ruff>=0.15.15",
+]
+research = [
+    "ipykernel>=7.2.0",
+    "jupyterlab>=4.5.7",
+    "matplotlib>=3.10.9",
+    "numpy>=2.4.6",
+    "pandas>=3.0.3",
+    "polars>=1.41.2",
+    "pyarrow>=24.0.0",
+    "scikit-learn>=1.8.0",
+    "seaborn>=0.13.2",
+]
+
+[tool.uv]
+default-groups = ["dev"]
 
 [tool.ruff]
 line-length = 100
-

@@ -17,7 +17,7 @@ Kaggle 以外も含めた技術調査を行い、業務 PoC / 研究テーマを
 ## 手順
 
 1. `docs/00_project_concept.md` と `AGENTS.md` を読む。
-2. `aidlc-docs/` がなければ `scripts/init_aidlc_docs.sh` を実行する。
+2. `aidlc-docs/` がなければ `uv run scripts/init_aidlc_docs.sh` を実行する。
 3. 問題設定、成功条件、制約を明確化する。
 4. 既存手法、代表論文、公式 Docs を調査する。
 5. Kaggle Dataset / Notebook / Discussion を必要に応じて調査する。

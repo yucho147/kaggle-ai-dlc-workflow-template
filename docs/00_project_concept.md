@@ -727,9 +727,9 @@ General technical research を実施してください。
 
 - `AGENTS.md`
 - `aidlc-docs/` 初期テンプレート
-- `skills/kaggle-starter/SKILL.md`
-- `skills/kaggle-winning-research/SKILL.md`
-- `skills/technical-research/SKILL.md`
+- `.agents/skills/kaggle-starter/SKILL.md`
+- `.agents/skills/kaggle-winning-research/SKILL.md`
+- `.agents/skills/technical-research/SKILL.md`
 - `scripts/init_aidlc_docs.sh`
 - `scripts/kaggle_collect_discussions.sh`
 - `scripts/kaggle_collect_notebooks.sh`
@@ -777,4 +777,4 @@ General technical research を実施してください。
 
 また、Kaggle CLI は公式に Discussion forum の閲覧に対応しており、`kaggle competitions topics list` と `kaggle competitions topics show` でコンペ Discussion の一覧・本文・コメントツリーを扱えます。
 
-次は、この Markdown を元に **`AGENTS.md` と `skills/kaggle-starter/SKILL.md` の初版**を作るのがよいと思います。
+次は、この Markdown を元に **`AGENTS.md` と `.agents/skills/kaggle-starter/SKILL.md` の初版**を作るのがよいと思います。

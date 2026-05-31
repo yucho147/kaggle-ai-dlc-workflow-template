@@ -5,13 +5,17 @@
 各ツールに共通して、最初にこのリポジトリのルートへ移動してから実行します。
 
 ```bash
-cd /path/to/kaggle_mcp
+cd /path/to/kaggle-ai-dlc-workflow-template
 ```
 
-初回は AI-DLC docs を生成します。
+初回は uv で環境を同期してから AI-DLC docs を生成します。
 
 ```bash
-scripts/init_aidlc_docs.sh
+uv sync
+```
+
+```bash
+uv run scripts/init_aidlc_docs.sh
 ```
 
 ## 共通の開始プロンプト
@@ -47,7 +51,7 @@ curl -fsSL https://chatgpt.com/codex/install.sh | sh
 ### 対話実行
 
 ```bash
-cd /path/to/kaggle_mcp
+cd /path/to/kaggle-ai-dlc-workflow-template
 codex
 ```
 
@@ -63,7 +67,7 @@ Kaggle competition starter を実施してください。
 対象コンペ:
 <competition-slug>
 
-まず docs/00_project_concept.md、AGENTS.md、skills/kaggle-starter/SKILL.md、aidlc-docs/ を読んでください。
+まず docs/00_project_concept.md、AGENTS.md、.agents/skills/kaggle-starter/SKILL.md、aidlc-docs/ を読んでください。
 Kaggle CLI の利用可否を確認し、必要な情報を aidlc-docs/ に整理してください。
 実装は、problem-overview.md と kaggle-starter.md と experiment-plan.md の骨子が揃ってから開始してください。
 ```
@@ -76,7 +80,7 @@ General technical research を実施してください。
 技術テーマ:
 <technical-theme>
 
-docs/00_project_concept.md、AGENTS.md、skills/technical-research/SKILL.md、aidlc-docs/ を読み、
+docs/00_project_concept.md、AGENTS.md、.agents/skills/technical-research/SKILL.md、aidlc-docs/ を読み、
 problem-overview.md、technical-research.md、risk-assessment.md、code-generation-plan.md を整理してください。
 ```
 
@@ -117,7 +121,7 @@ copilot login
 ### 対話実行
 
 ```bash
-cd /path/to/kaggle_mcp
+cd /path/to/kaggle-ai-dlc-workflow-template
 copilot
 ```
 
@@ -134,7 +138,7 @@ copilot -p "docs/00_project_concept.md、AGENTS.md、aidlc-docs/ を読み、こ
 Kaggle Starter の初動を依頼する場合:
 
 ```bash
-copilot -p "Kaggle competition starter を開始します。対象コンペは <competition-slug> です。docs/00_project_concept.md、AGENTS.md、skills/kaggle-starter/SKILL.md、aidlc-docs/ を読み、実装前に必要な確認事項を整理してください。"
+copilot -p "Kaggle competition starter を開始します。対象コンペは <competition-slug> です。docs/00_project_concept.md、AGENTS.md、.agents/skills/kaggle-starter/SKILL.md、aidlc-docs/ を読み、実装前に必要な確認事項を整理してください。"
 ```
 
 ## Claude Code
@@ -156,7 +160,7 @@ brew install --cask claude-code
 ### 対話実行
 
 ```bash
-cd /path/to/kaggle_mcp
+cd /path/to/kaggle-ai-dlc-workflow-template
 claude
 ```
 
