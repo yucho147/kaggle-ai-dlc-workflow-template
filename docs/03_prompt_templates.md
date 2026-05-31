@@ -20,6 +20,7 @@
 
 実装は、Inception の最小ドキュメントと Construction の設計ドキュメントが揃うまで開始しないでください。
 外部情報を取得した場合は、日時、URL または tool / command、判断を aidlc-docs/audit.md に記録してください。
+実験結果レビュー、次の仮説選定、採用/不採用判断を人間に依頼する場合は、uv run python scripts/render_improvement_report.py で HTML report を生成し、Markdown ではなく outputs/reports/improvement-report.html と MLflow UI に誘導してください。
 ```
 
 ## 2. Kaggle Starter
@@ -137,9 +138,22 @@ baseline 実装を開始してください。
 - Notebook を作る場合も、core logic は `src/<package_name>/` から import する
 
 実装後は、実行コマンドと結果を aidlc-docs/operations/experiment-log.md に記録してください。
+人間にレビューを依頼する前に、uv run python scripts/render_improvement_report.py を実行し、outputs/reports/improvement-report.html と MLflow UI を見るよう案内してください。
 ```
 
-## 7. Kaggle MCP 設計依頼
+## 7. 継続改善レビュー依頼
+
+```text
+継続的な改善サイクルのレビュー準備をしてください。
+
+手順:
+1. aidlc-docs/operations/improvement-loop.md を読んでください。
+2. aidlc-docs/construction/experiment-plan.md、aidlc-docs/operations/experiment-log.md、cv-lb-tracking.md、lessons-learned.md を確認してください。
+3. uv run python scripts/render_improvement_report.py を実行して HTML report を更新してください。
+4. 人間には Markdown ではなく、outputs/reports/improvement-report.html と MLflow UI を見て、次の仮説選定または採用/不採用判断をするよう案内してください。
+```
+
+## 8. Kaggle MCP 設計依頼
 
 ```text
 Kaggle MCP の設計案を作ってください。

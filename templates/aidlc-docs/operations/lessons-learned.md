@@ -2,13 +2,18 @@
 
 ## What Worked
 
-- TBD
+| Experiment | Finding | Why It Worked | Reuse |
+| --- | --- | --- | --- |
+| TBD | TBD | TBD | TBD |
 
 ## What Did Not Work
 
-- TBD
+| Experiment | Finding | Likely Reason | Avoid / Retry Condition |
+| --- | --- | --- | --- |
+| TBD | TBD | TBD | TBD |
 
 ## Reusable Knowledge
 
-- TBD
-
+| Pattern | Context | Notes |
+| --- | --- | --- |
+| TBD | TBD | TBD |

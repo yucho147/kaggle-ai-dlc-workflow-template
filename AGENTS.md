@@ -16,6 +16,10 @@
 10. 新規コードを作る前に、`aidlc-docs/construction/implementation-questionnaire.md` と `architecture.md` でコード構成、実験管理、設定管理、Notebook 利用方針を確認する。
 11. 既存コードがない場合、CLI 引数の直接実装より Hydra、`print` より loguru、手書き実験ログのみより MLflow 併用を標準とする。
 12. Kaggle の Competition / Discussion / Dataset / Notebook 取得は、直接 CLI に密結合せず、MCP または adapter 境界を通して抽象化する方針を優先する。
+13. 継続的な改善サイクルでは、人間の閲覧面は MLflow UI と `outputs/reports/improvement-report.html`、agent の正本は `aidlc-docs/` の Markdown とする。
+14. HTML report は `uv run python scripts/render_improvement_report.py` で生成する。agent は生成された HTML を直接編集しない。
+15. 実験結果レビュー、次の仮説選定、採用/不採用判断などを人間に促すときは、事前に HTML report を再生成し、`outputs/reports/improvement-report.html` と必要に応じて MLflow UI を案内する。
+16. 人間向けの確認依頼では、Markdown ファイルを主な閲覧先にしない。Markdown は agent が更新する正本として扱い、人間には HTML report と MLflow UI を見るよう促す。
 
 ## フェーズ
 
@@ -39,6 +43,7 @@
 - 実験結果を記録する
 - CV / LB / 業務評価を比較する
 - 得られた知見を再利用可能な形に残す
+- MLflow UI と HTML report を見て次の改善仮説を決める
 
 ## 実装開始条件
 

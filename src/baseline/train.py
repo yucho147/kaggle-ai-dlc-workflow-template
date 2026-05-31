@@ -20,7 +20,7 @@ from hydra.utils import to_absolute_path
 from loguru import logger
 from omegaconf import DictConfig
 
-from baseline.data import load_train_data, save_submission
+from baseline.data import load_test_data, load_train_data, save_submission
 from baseline.evaluate import run_cross_validation
 from baseline.model import build_model
 from baseline.tracking import log_config, log_cv_results, resolve_tracking_uri
@@ -57,7 +57,7 @@ def main(cfg: DictConfig) -> None:
     with mlflow.start_run(run_name=run_name):
         log_config(cfg)
 
-        X, y = load_train_data(cfg)
+        X, y, feature_columns = load_train_data(cfg)
         model = build_model(cfg)
         scores = run_cross_validation(model, X, y, cfg)
         cv_mean, cv_std = log_cv_results(scores, cfg.validation.metric)
@@ -65,12 +65,16 @@ def main(cfg: DictConfig) -> None:
 
         # Train final model on full data
         model.fit(X, y)
-        mlflow.sklearn.log_model(model, artifact_path="model")
+        mlflow.sklearn.log_model(model, name="model")
 
-        # Save and log submission placeholder
-        submission_path = submission_dir / f"{run_name}_{timestamp}.csv"
-        save_submission(model.predict(X), submission_path)
-        mlflow.log_artifact(str(submission_path), artifact_path="submission")
+        test_data = load_test_data(cfg, feature_columns)
+        if test_data is None:
+            logger.info("No submission artifact was generated.")
+        else:
+            X_test, test_df = test_data
+            submission_path = submission_dir / f"{run_name}_{timestamp}.csv"
+            save_submission(model.predict(X_test), submission_path, cfg, test_df)
+            mlflow.log_artifact(str(submission_path), artifact_path="submission")
 
     logger.info("Done.")
 

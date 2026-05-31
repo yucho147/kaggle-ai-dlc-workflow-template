@@ -13,3 +13,4 @@ Claude Code reads `CLAUDE.md` at session start. The shared project instructions 
 - Do not start implementation until the minimum Inception docs and Construction design docs are filled in.
 - For new code, align architecture with `aidlc-docs/construction/implementation-questionnaire.md` and `architecture.md`.
 - Prefer Hydra, loguru, MLflow, and a Kaggle MCP / Gateway boundary for new implementations.
+- When asking humans to review experiment results or choose the next hypothesis, regenerate the HTML report and point them to `outputs/reports/improvement-report.html` and MLflow UI instead of using Markdown as the main review surface.

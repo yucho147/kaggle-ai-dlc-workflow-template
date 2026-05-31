@@ -30,6 +30,7 @@ AGENTS.md、docs/00_project_concept.md、docs/02_quickstart.md、docs/03_prompt_
 新規コードでは、Hydra / loguru / MLflow と Kaggle MCP / Gateway 境界を標準にしてください。
 実装前に implementation-questionnaire.md と architecture.md を更新してください。
 外部情報を取得した場合は aidlc-docs/audit.md に記録してください。
+実験結果レビューや次の仮説選定を人間に依頼する場合は、uv run python scripts/render_improvement_report.py で HTML report を生成し、outputs/reports/improvement-report.html と MLflow UI に誘導してください。
 ```
 
 ## Non-Interactive Start

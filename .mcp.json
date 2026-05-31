@@ -11,6 +11,6 @@
     "huggingface": {
       "type": "http",
       "url": "https://huggingface.co/mcp"
-    },
+    }
   }
 }

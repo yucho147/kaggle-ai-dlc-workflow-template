@@ -13,6 +13,8 @@
 - Kaggle の Competition / Discussion / Notebook / Dataset 取得は MCP / Gateway 境界を優先し、CLI は adapter fallback とする。
 - 外部情報源、実行 command、仮定、判断を `aidlc-docs/audit.md` に記録する。
 - 実験 command と結果を `aidlc-docs/operations/experiment-log.md` に記録する。
+- 継続的な改善サイクルでは、人間の閲覧面は MLflow UI と `outputs/reports/improvement-report.html`、agent の正本は `aidlc-docs/` の Markdown とする。
+- 実験結果レビュー、次の仮説選定、採用/不採用判断などを人間に促すときは、`uv run python scripts/render_improvement_report.py` で HTML report を再生成し、Markdown ではなく HTML report と MLflow UI を案内する。
 
 ## Skills
 

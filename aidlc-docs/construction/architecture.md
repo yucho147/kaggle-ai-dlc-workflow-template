@@ -30,9 +30,7 @@ TBD
 │   ├── validation/
 │   ├── features/
 │   └── tracking/
-├── notebooks/
-│   ├── 00_eda.ipynb
-│   └── 01_baseline.ipynb
+├── notebooks/                # 必要に応じて作成する EDA / baseline Notebook
 ├── src/
 │   └── <package_name>/
 │       ├── app/              # use cases: train, predict, validate, submit
