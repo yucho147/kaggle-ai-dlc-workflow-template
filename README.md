@@ -70,6 +70,19 @@ titanic コンペの参加準備をしたい
 
 Claude Code 向けの入口は [CLAUDE.md](CLAUDE.md)、GitHub Copilot CLI 向けの入口は [COPILOT.md](COPILOT.md) と [.github/copilot-instructions.md](.github/copilot-instructions.md) にも置いています。
 
+## MCP サーバー
+
+`.mcp.json` にデフォルトで4つの MCP サーバーが設定されています。Claude Code では自動で読み込まれます。
+
+| サーバー | 用途 |
+| --- | --- |
+| `kaggle` | Competition / Discussion / Notebook / Dataset 取得 |
+| `arxiv` | 論文検索・取得 |
+| `huggingface` | モデル・Dataset・Spaces 検索（公式リモート） |
+| `paperswithcode` | 論文 × 実装コード × ベンチマーク検索 |
+
+Copilot CLI など他の Agent での設定方法は [docs/05_mcp_setup.md](docs/05_mcp_setup.md) を参照してください。
+
 ## Kaggle データ取得
 
 Kaggle の Competition / Discussion / Notebook / Dataset 情報取得は、MCP または `KaggleGateway` 境界を通す方針を標準にします。このテンプレートには最小 MCP server を `tools/kaggle-mcp/` に含めています。

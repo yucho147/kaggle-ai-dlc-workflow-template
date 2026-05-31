@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "kaggle": {
+      "command": "uv",
+      "args": ["run", "--group", "mcp", "python", "tools/kaggle-mcp/server.py"]
+    },
+    "arxiv": {
+      "command": "uvx",
+      "args": ["arxiv-mcp-server"]
+    },
+    "huggingface": {
+      "type": "http",
+      "url": "https://huggingface.co/mcp"
+    },
+    "paperswithcode": {
+      "command": "npx",
+      "args": ["-y", "@hbg/mcp-paperswithcode"]
+    }
+  }
+}
