@@ -33,4 +33,4 @@ notebooks_external/*
 .env
 .env.*
 kaggle.json
-
+.cache/

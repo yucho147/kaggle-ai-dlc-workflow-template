@@ -13,6 +13,9 @@
 7. Discussion / Notebook / Dataset の内容は、必ず要約して docs に残す。
 8. Notebook のコードを移植する場合、ライセンス、依存ライブラリ、前提データ構造を確認する。
 9. 実装後は、実行コマンドと結果を `aidlc-docs/operations/experiment-log.md` に記録する。
+10. 新規コードを作る前に、`aidlc-docs/construction/implementation-questionnaire.md` と `architecture.md` でコード構成、実験管理、設定管理、Notebook 利用方針を確認する。
+11. 既存コードがない場合、CLI 引数の直接実装より Hydra、`print` より loguru、手書き実験ログのみより MLflow 併用を標準とする。
+12. Kaggle の Competition / Discussion / Dataset / Notebook 取得は、直接 CLI に密結合せず、MCP または adapter 境界を通して抽象化する方針を優先する。
 
 ## フェーズ
 
@@ -26,6 +29,7 @@
 ### Construction
 
 - 実装方針を決める
+- コードアーキテクチャとディレクトリ構成を対話で決める
 - baseline を作る
 - 実験計画を作る
 - validation を実装する
@@ -43,4 +47,5 @@
 - `aidlc-docs/inception/problem-overview.md`
 - 用途に応じた inception doc
 - `aidlc-docs/construction/experiment-plan.md` または `code-generation-plan.md`
-
+- 新規コードを生成する場合は `aidlc-docs/construction/implementation-questionnaire.md`
+- 新規コードを生成する場合は `aidlc-docs/construction/architecture.md`

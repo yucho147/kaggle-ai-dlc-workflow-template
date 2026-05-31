@@ -547,102 +547,37 @@ coding agent は、最初に以下を確認する。
 - メモリ制限はあるか？
 - チーム開発か個人開発か？
 
-## 10. 初回プロンプト案
+## 10. 日本語プロンプト群
 
-coding agent に最初に渡すプロンプト例。
+coding agent に貼り付けるプロンプトは [docs/03_prompt_templates.md](03_prompt_templates.md) にまとめる。
 
-```markdown
-このリポジトリでは、Kaggle / 技術調査を AI-DLC 風に進めます。
+このテンプレートのユーザーは日本語話者が多い想定のため、プロンプト本文、設計質問、実装前確認事項は日本語を標準とする。ライブラリ名、config key、module name、command などは英語表記のままでよい。
 
-まず `docs/00_project_concept.md` と `AGENTS.md` を読み、以下を実施してください。
+プロンプト群には以下を含める。
 
-1. ワークスペースを確認する
-2. `aidlc-docs/` がなければ作成する
-3. `aidlc-docs/aidlc-state.md` と `aidlc-docs/audit.md` を作成する
-4. 今回の用途が未確定であれば質問する
-5. 用途に応じて Inception フェーズのドキュメント作成から始める
-6. 実装は、Inception の最小ドキュメントが揃うまで開始しない
+- 共通開始プロンプト
+- Kaggle Starter
+- Kaggle Winning Research
+- Technical Research
+- 実装前設計の擦り合わせ
+- Baseline 実装依頼
+- Kaggle MCP 設計依頼
 
-現時点の想定用途は以下です。
+## 11. 実装前設計の追加方針
 
-- Competition Starter
-- Competition Winning Research
-- General Technical Research
+Titanic での試行では、`train.py` に設定読込、特徴量、前処理、model factory、CV、保存処理が集中しやすく、モデル追加や validation 変更が同じファイルに波及しやすいことが分かった。
 
-必要であれば、私に質問してください。
-```
+そのため、新規コードでは以下を標準方針とする。
 
-## 11. Kaggle Starter の初回プロンプト例
+- 新規設定管理は argparse ではなく Hydra。
+- 実行ログは `print` ではなく loguru。
+- 実験管理は MLflow を必須にし、Kaggle 提出用 artifact は local `outputs/` にも保存する。
+- Notebook 管理を選ぶ場合も、core logic は `src/<package_name>/` から import する。
+- Kaggle Discussion / Notebook / Dataset / Competition metadata の取得は、`tools/kaggle-mcp/` の MCP server または `KaggleGateway` interface を優先し、CLI は adapter fallback にする。
+- Technical Research でも Kaggle Competition / Discussion / Notebook / Dataset を MCP 経由で探索し、論文・公式 Docs・GitHub・Hugging Face と比較して最良候補を選ぶ。
+- 実装前に `aidlc-docs/construction/implementation-questionnaire.md` と `architecture.md` を埋める。
 
-```markdown
-Kaggle competition starter を実施してください。
-
-対象コンペ:
-<competition-slug>
-
-実施内容:
-1. Kaggle CLI が使えるか確認
-2. コンペ情報を取得
-3. データファイル一覧を確認
-4. データを `data/raw/` にダウンロード
-5. train / test / sample_submission の構造を確認
-6. 評価指標と提出形式を整理
-7. `aidlc-docs/inception/kaggle-starter.md` を作成
-8. `notebooks/00_eda.ipynb` と `notebooks/01_baseline.ipynb` の作成計画を立てる
-
-実装は、確認事項を整理してから開始してください。
-```
-
-## 12. Kaggle Winning Research の初回プロンプト例
-
-```markdown
-Kaggle competition winning research を実施してください。
-
-対象コンペ:
-<competition-slug>
-
-目的:
-Discussion / Notebook / Writeup から、勝ち筋、注意点、実装候補を抽出し、戦略立案に使えるドキュメントを作る。
-
-実施内容:
-1. Discussion topics を recent / hot / votes の観点で取得
-2. 重要トピックを選定
-3. 本文とコメントツリーを読む
-4. Notebook を検索して、有用な実装を抽出
-5. CV / Feature / Model / Ensemble / External Data / Leakage / LB Shakeup / Failed Approaches に分類
-6. `aidlc-docs/inception/winning-research.md` を作成
-7. `aidlc-docs/construction/implementation-candidates.md` を作成
-8. 最初に試す実験候補を `aidlc-docs/construction/experiment-plan.md` に整理する
-
-不明点があれば、実行前に質問してください。
-```
-
-## 13. General Technical Research の初回プロンプト例
-
-```markdown
-General technical research を実施してください。
-
-技術テーマ:
-<technical-theme>
-
-目的:
-業務または研究テーマに対して、既存手法、実装、データ、PoC 方針を整理し、baseline 実装に入れる状態にする。
-
-実施内容:
-1. 問題設定を整理
-2. 代表的な手法を調査
-3. Kaggle Dataset / Notebook / Discussion を調査
-4. GitHub 実装を調査
-5. 公式Docs / 論文 / Hugging Face を必要に応じて調査
-6. 業務データへの適用可能性を評価
-7. `aidlc-docs/inception/technical-research.md` を作成
-8. `aidlc-docs/construction/architecture.md` を作成
-9. `aidlc-docs/construction/code-generation-plan.md` を作成
-
-調査結果だけで終わらせず、最小 PoC の実装計画まで落としてください。
-```
-
-## 14. 完了条件
+## 12. 完了条件
 
 この workflow の最小完了条件は以下とする。
 

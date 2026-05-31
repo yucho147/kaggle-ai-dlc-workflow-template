@@ -1,29 +1,32 @@
 # GitHub Copilot CLI Instructions
 
-This repository is an AI-DLC style workflow template for Kaggle competitions, winning-solution research, and business PoC / technical research.
+このリポジトリは、Kaggle コンペ、勝ち筋調査、業務 PoC / 技術調査を AI-DLC 風に進めるための workflow template です。
 
 ## Core Workflow
 
-- Read `docs/00_project_concept.md`, `docs/02_quickstart.md`, and `aidlc-docs/` before starting work.
-- Use `uv` for Python and dependency management.
-- Run setup with `uv sync`.
-- Initialize AI-DLC docs with `uv run scripts/init_aidlc_docs.sh` when needed.
-- Do not start implementation until the minimum Inception docs are filled in.
-- Record external sources, commands, assumptions, and decisions in `aidlc-docs/audit.md`.
-- Record experiment commands and results in `aidlc-docs/operations/experiment-log.md`.
+- 作業前に `docs/00_project_concept.md`, `docs/02_quickstart.md`, `docs/03_prompt_templates.md`, `aidlc-docs/` を読む。
+- Python と依存関係管理には `uv` を使う。
+- setup は `uv sync` で行う。
+- 必要に応じて `uv run scripts/init_aidlc_docs.sh` で AI-DLC docs を初期化する。
+- Inception の最小 docs と Construction の設計 docs が揃うまで実装を始めない。
+- 新規コードでは、Hydra / loguru / MLflow を標準にする。
+- Kaggle の Competition / Discussion / Notebook / Dataset 取得は MCP / Gateway 境界を優先し、CLI は adapter fallback とする。
+- 外部情報源、実行 command、仮定、判断を `aidlc-docs/audit.md` に記録する。
+- 実験 command と結果を `aidlc-docs/operations/experiment-log.md` に記録する。
 
 ## Skills
 
-Repository skills live under `.agents/skills/`.
+Repository skills は `.agents/skills/` 配下にある。
 
 - `.agents/skills/kaggle-starter/SKILL.md`
 - `.agents/skills/kaggle-winning-research/SKILL.md`
 - `.agents/skills/technical-research/SKILL.md`
 
-Use the relevant skill instructions before changing docs or code for that workflow.
+workflow に応じた skill instructions を読んでから docs / code を変更する。
 
 ## Kaggle
 
-- Run Kaggle CLI through uv: `uv run kaggle ...`.
-- Before downloading data, confirm Kaggle API authentication and competition rules.
-- Keep downloaded data under `data/raw/` and do not commit data files.
+- Kaggle 情報取得は MCP / Gateway 経由を優先する。
+- CLI が必要な場合は `uv run kaggle ...` を adapter fallback として使う。
+- data download 前に Kaggle API authentication と competition rules を確認する。
+- downloaded data は `data/raw/` 配下に置き、data files は commit しない。

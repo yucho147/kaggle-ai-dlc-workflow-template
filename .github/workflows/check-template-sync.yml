@@ -1,0 +1,21 @@
+name: Check template sync
+
+on:
+  push:
+    paths:
+      - "templates/aidlc-docs/**"
+      - "aidlc-docs/**"
+  pull_request:
+    paths:
+      - "templates/aidlc-docs/**"
+      - "aidlc-docs/**"
+
+jobs:
+  check-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify aidlc-docs matches templates/aidlc-docs
+        run: |
+          bash scripts/init_aidlc_docs.sh --check
