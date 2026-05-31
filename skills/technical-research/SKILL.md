@@ -1,3 +1,10 @@
+---
+name: technical-research
+description: Use when conducting general technical research for a business PoC, research theme, or non-Kaggle technical investigation, and you need to organize the problem setting, existing methods, papers, official docs, GitHub implementations, Kaggle references, Hugging Face resources, applicability risks, PoC scope, and baseline implementation plan.
+metadata:
+  short-description: Plan technical research and PoC
+---
+
 # technical-research
 
 Kaggle 以外も含めた技術調査を行い、業務 PoC / 研究テーマを baseline 実装に入れる状態へ整理する skill です。

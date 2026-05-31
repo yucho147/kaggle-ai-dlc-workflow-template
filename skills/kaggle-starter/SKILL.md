@@ -1,3 +1,10 @@
+---
+name: kaggle-starter
+description: Use when starting a Kaggle competition and you need to organize the competition overview, evaluation metric, data files, target/id/submission format, initial EDA direction, baseline plan, and AI-DLC documents before implementation.
+metadata:
+  short-description: Start a Kaggle competition
+---
+
 # kaggle-starter
 
 Kaggle competition の参加開始時に、データ、評価指標、提出形式、初期 EDA / baseline 方針を整理するための skill です。

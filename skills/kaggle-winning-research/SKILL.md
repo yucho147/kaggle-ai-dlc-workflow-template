@@ -1,3 +1,10 @@
+---
+name: kaggle-winning-research
+description: Use when researching a Kaggle competition discussions, notebooks, writeups, and reusable implementations to extract winning strategies, CV design, features, models, ensembles, external data, leakage risks, LB shakeup risks, failed approaches, and prioritized experiment ideas.
+metadata:
+  short-description: Research Kaggle winning strategies
+---
+
 # kaggle-winning-research
 
 Kaggle Discussion / Notebook / Writeup から勝ち筋、注意点、実装候補を抽出するための skill です。
