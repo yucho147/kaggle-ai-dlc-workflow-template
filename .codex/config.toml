@@ -1,0 +1,18 @@
+[mcp_servers.kaggle]
+command = "uv"
+args = ["run", "--group", "mcp", "python", "tools/kaggle-mcp/server.py"]
+cwd = "."
+env = { UV_CACHE_DIR = ".cache/uv" }
+startup_timeout_sec = 60
+tool_timeout_sec = 900
+
+[mcp_servers.arxiv]
+command = "uvx"
+args = ["arxiv-mcp-server"]
+cwd = "."
+env = { UV_CACHE_DIR = ".cache/uv", UV_TOOL_DIR = ".cache/uv-tools" }
+startup_timeout_sec = 60
+tool_timeout_sec = 300
+
+[mcp_servers.huggingface]
+url = "https://huggingface.co/mcp"

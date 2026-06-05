@@ -49,6 +49,8 @@ uv sync
 codex
 ```
 
+初回はプロジェクトを trust します。起動後に `/skills` と `/mcp` を実行し、3つの repository skill と `kaggle` / `arxiv` / `huggingface` MCP server が表示されることを確認してください。
+
 ### GitHub Copilot CLI
 
 ```bash

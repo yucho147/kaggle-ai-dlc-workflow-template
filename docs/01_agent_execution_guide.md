@@ -52,7 +52,18 @@ cd /path/to/kaggle-ai-dlc-workflow-template
 codex
 ```
 
-起動後、共通の開始プロンプトを貼り付けます。
+初回はプロジェクトを trust してください。Codex は `AGENTS.md` と `.agents/skills/` を自動検出し、trusted project では `.codex/config.toml` の MCP 設定も読み込みます。
+
+起動後、以下で設定を確認できます。
+
+```text
+/skills
+/mcp
+```
+
+3つの repository skill と `kaggle` / `arxiv` / `huggingface` MCP server が表示されたら、共通の開始プロンプトを貼り付けます。
+
+この構成は 2026-06-05 に Codex で repository skills の検出、各 MCP server の初期化、tool list の取得まで動作確認済みです。
 
 ### このテンプレートでの使い方
 
