@@ -42,6 +42,15 @@ codex mcp list
 
 プロジェクトルートの `.mcp.json` が自動で読み込まれます。追加設定は不要です。
 
+`.claude/commands/` にプロジェクト固有のスラッシュコマンドが定義されており、セッション内から直接呼び出せます。
+
+| コマンド | 用途 |
+| --- | --- |
+| `/kaggle-starter <slug>` | Kaggle コンペ参加開始: データ・評価指標・baseline 方針を整理する |
+| `/kaggle-winning-research <slug>` | Discussion / Notebook から勝ち筋・失敗例・実装候補を抽出する |
+| `/technical-research <theme>` | 業務 PoC / 技術調査: 候補手法・実装候補・PoC スコープを整理する |
+| `/improvement-review` | 継続改善: HTML report 再生成・次の仮説選定を人間に案内する |
+
 HuggingFace のプライベートモデルやプライベート Dataset を使う場合は `.env` に追加してください。
 
 ```bash

@@ -63,7 +63,7 @@ Codex、GitHub Copilot CLI、Claude Code を起動して、やりたいことを
 | --- | --- | --- |
 | OpenAI Codex | 対応・動作確認済み | `AGENTS.md`, `.agents/skills/`, `.codex/config.toml` |
 | GitHub Copilot CLI | 対応 | `COPILOT.md`, `.github/copilot-instructions.md` |
-| Claude Code | 対応 | `CLAUDE.md`, `.mcp.json` |
+| Claude Code | 対応 | `CLAUDE.md`, `.mcp.json`, `.claude/commands/` |
 
 ```
 titanic コンペの参加準備をしたい

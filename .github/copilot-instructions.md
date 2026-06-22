@@ -23,6 +23,7 @@ Repository skills は `.agents/skills/` 配下にある。
 - `.agents/skills/kaggle-starter/SKILL.md`
 - `.agents/skills/kaggle-winning-research/SKILL.md`
 - `.agents/skills/technical-research/SKILL.md`
+- `.agents/skills/improvement-review/SKILL.md`
 
 workflow に応じた skill instructions を読んでから docs / code を変更する。
 
