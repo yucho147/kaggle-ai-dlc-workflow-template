@@ -1,6 +1,6 @@
 # Agent Execution Guide
 
-このテンプレートを Codex、GitHub Copilot CLI、Claude Code で実行するための手順です。
+このテンプレートを Codex、GitHub Copilot CLI、Claude Code、Kiro CLI で実行するための手順です。
 
 各ツールに共通して、**このリポジトリは GitHub Template Repository です**。まず GitHub の「Use this template」で新しいリポジトリを作り、そちらで作業してください。
 
@@ -205,6 +205,46 @@ docs/00_project_concept.md、AGENTS.md、aidlc-docs/ を読んで、この workf
 
 ```text
 /kaggle-starter titanic
+```
+
+## Kiro CLI
+
+### インストール
+
+公式 docs を参照してください。
+
+### 対話実行
+
+```bash
+cd /path/to/kaggle-ai-dlc-workflow-template
+kiro-cli chat
+```
+
+Kiro CLI はプロジェクトルートの `.kiro/steering/` 配下の Markdown ファイルを自動的にコンテキストに読み込みます。このテンプレートでは `.kiro/steering/agents.md` が `AGENTS.md` への symlink になっているため、Codex と同じ指示内容が自動で適用されます。
+
+### MCP サーバー
+
+`.kiro/settings/mcp.json` に `kaggle` / `arxiv` / `huggingface` の3つの MCP サーバーが設定されています。起動後、以下で確認できます。
+
+```text
+/mcp
+```
+
+### このテンプレートでの使い方
+
+起動後、共通の開始プロンプトを貼り付けます。Kiro CLI は steering file として AGENTS.md の内容を自動読み込みしているため、追加の指示なしでワークフローに従います。
+
+Kaggle Starter を始める場合:
+
+```text
+Kaggle competition starter を実施してください。
+
+対象コンペ:
+<competition-slug>
+
+まず docs/00_project_concept.md、.agents/skills/kaggle-starter/SKILL.md、aidlc-docs/ を読んでください。
+Kaggle 情報取得は MCP 経由を優先してください。
+実装は、problem-overview.md、kaggle-starter.md、implementation-questionnaire.md、architecture.md、experiment-plan.md の骨子が揃ってから開始してください。
 ```
 
 ## 推奨運用

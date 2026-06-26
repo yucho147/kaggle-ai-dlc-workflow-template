@@ -64,6 +64,7 @@ Codex、GitHub Copilot CLI、Claude Code を起動して、やりたいことを
 | OpenAI Codex | 対応・動作確認済み | `AGENTS.md`, `.agents/skills/`, `.codex/config.toml` |
 | GitHub Copilot CLI | 対応 | `COPILOT.md`, `.github/copilot-instructions.md` |
 | Claude Code | 対応 | `CLAUDE.md`, `.mcp.json`, `.claude/commands/` |
+| Kiro CLI | 対応 | `.kiro/steering/`, `.kiro/settings/mcp.json` |
 
 ```
 titanic コンペの参加準備をしたい
@@ -76,6 +77,8 @@ titanic コンペの参加準備をしたい
 
 Codex は [AGENTS.md](AGENTS.md) と [.agents/skills/](.agents/skills/) を読み、プロジェクトを trust すると [.codex/config.toml](.codex/config.toml) の MCP 設定も読み込みます。2026-06-05 時点で、repository skills の検出と `kaggle` / `arxiv` / `huggingface` MCP server の起動を Codex で確認済みです。
 Claude Code 向けの入口は [CLAUDE.md](CLAUDE.md)、GitHub Copilot CLI 向けの入口は [COPILOT.md](COPILOT.md) と [.github/copilot-instructions.md](.github/copilot-instructions.md) にも置いています。
+
+Kiro CLI では `/agent research-agent` で調査特化エージェントに切り替えできます。Kaggle Discussion・Notebook・論文・HuggingFace の情報収集と `aidlc-docs/` への知見整理に最適化されたエージェントです。
 
 ## MCP サーバー
 

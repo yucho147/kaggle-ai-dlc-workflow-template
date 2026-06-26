@@ -1,0 +1,9 @@
+{
+  "name": "research-agent",
+  "description": "Kaggle / Technical Research AI-DLC workflow agent",
+  "resources": [
+    "file://.kiro/steering/**/*.md",
+    "file://README.md",
+    "skill://.kiro/skills/**/SKILL.md"
+  ]
+}
