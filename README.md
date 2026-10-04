@@ -1,175 +1,123 @@
 # Kaggle / Technical Research AI-DLC Workflow Template
 
-Kaggle コンペ参加、勝ち筋調査、業務 PoC / 技術調査を AI-DLC 風に進めるためのテンプレートです。
+Kaggle コンペ参加、勝ち筋調査、業務 PoC / 技術調査を、問題設定から評価・改善・引継ぎまでつなぐ日本語テンプレートです。AI-DLC の考え方を、実験と調査向けに応用しています。
 
-詳細な構想は [docs/00_project_concept.md](docs/00_project_concept.md) を参照してください。
+人間が目的・予算・採否を決め、agent が調査、設計、実装、実行記録を進めます。調査だけの依頼でも使えます。
 
-## 新しいプロジェクトを始める
+## 新しい案件を始める
 
-**このリポジトリは GitHub Template Repository です。**
-
-新しい Kaggle コンペや技術調査プロジェクトを始めるときは、このリポジトリをコピーして専用リポジトリを作ります。
-
-1. GitHub の **「Use this template」** ボタン → 「Create a new repository」
-2. 新しいリポジトリに clone して作業を開始する
+GitHub の **Use this template** で案件ごとのリポジトリを作り、clone します。
 
 ```bash
-git clone https://github.com/<your-org>/<your-project>.git
 cd <your-project>
-uv sync
-```
-
-3. Coding Agent を起動して、やりたいことを話しかける
-
-```
-titanic コンペの参加準備をしたい
-異常検知の PoC を始めたい
-```
-
-どう話しかければいいか迷ったときは [docs/03_prompt_templates.md](docs/03_prompt_templates.md) を参考にしてください。
-
-> **このテンプレートリポジトリを直接の作業場として使わないでください。**
-> `aidlc-docs/` はプロジェクト固有のドキュメントを書く場所です。テンプレート側を汚染しないよう、新規プロジェクトごとに別リポジトリを作ってください。
-
----
-
-## 目的
-
-このテンプレートは、情報収集で止めずに以下まで進めることを目的にします。
-
-- 問題設定、評価指標、データ構造の整理
-- Discussion / Notebook / 既存実装からの知見抽出
-- baseline 実装方針の決定
-- coding agent が実装を開始できる spec の作成
-- 実験ログと判断履歴の蓄積
-
-## 派生リポジトリでの初期化
-
-新しいリポジトリを作った後、依存関係を同期します。
-
-```bash
-uv sync
-```
-
-`aidlc-docs/` はすでにプレースホルダーが入った状態で含まれています。そのまま Coding Agent を起動して作業を開始してください。
-
-最短手順は [docs/02_quickstart.md](docs/02_quickstart.md) を参照してください。
-
-## Coding Agent での実行
-
-Codex、GitHub Copilot CLI、Claude Code を起動して、やりたいことを普通に話しかけるだけで動きます。
-
-| Coding Agent | 対応状況 | プロジェクト設定 |
-| --- | --- | --- |
-| OpenAI Codex | 対応・動作確認済み | `AGENTS.md`, `.agents/skills/`, `.codex/config.toml` |
-| GitHub Copilot CLI | 対応 | `COPILOT.md`, `.github/copilot-instructions.md` |
-| Claude Code | 対応 | `CLAUDE.md`, `.mcp.json`, `.claude/commands/` |
-| Kiro CLI | 対応 | `.kiro/steering/`, `.kiro/settings/mcp.json` |
-
-```
-titanic コンペの参加準備をしたい
-異常検知の PoC を始めたい
-```
-
-どう話しかければいいか迷ったときは [docs/03_prompt_templates.md](docs/03_prompt_templates.md) に用途別のプロンプト例をまとめています。
-
-各ツールのセットアップは [docs/01_agent_execution_guide.md](docs/01_agent_execution_guide.md) を参照してください。
-
-Codex は [AGENTS.md](AGENTS.md) と [.agents/skills/](.agents/skills/) を読み、プロジェクトを trust すると [.codex/config.toml](.codex/config.toml) の MCP 設定も読み込みます。2026-06-05 時点で、repository skills の検出と `kaggle` / `arxiv` / `huggingface` MCP server の起動を Codex で確認済みです。
-Claude Code 向けの入口は [CLAUDE.md](CLAUDE.md)、GitHub Copilot CLI 向けの入口は [COPILOT.md](COPILOT.md) と [.github/copilot-instructions.md](.github/copilot-instructions.md) にも置いています。
-
-Kiro CLI では `/agent research-agent` で調査特化エージェントに切り替えできます。Kaggle Discussion・Notebook・論文・HuggingFace の情報収集と `aidlc-docs/` への知見整理に最適化されたエージェントです。
-
-## MCP サーバー
-
-`.mcp.json` と `.codex/config.toml` にデフォルトで3つの MCP サーバーが設定されています。Claude Code と Codex は、それぞれ対応するプロジェクト設定を読み込みます。
-
-| サーバー | 用途 |
-| --- | --- |
-| `kaggle` | Competition / Discussion / Notebook / Dataset 取得 |
-| `arxiv` | 論文検索・取得 |
-| `huggingface` | モデル・Dataset・Spaces 検索（公式リモート） |
-
-Codex では `/skills` と `/mcp`、Copilot CLI では `/mcp show` で設定を確認できます。詳しくは [docs/05_mcp_setup.md](docs/05_mcp_setup.md) を参照してください。
-
-## Kaggle データ取得
-
-Kaggle の Competition / Discussion / Notebook / Dataset 情報取得は、MCP または `KaggleGateway` 境界を通す方針を標準にします。このテンプレートには最小 MCP server を `tools/kaggle-mcp/` に含めています。
-
-```bash
-uv run --group mcp python tools/kaggle-mcp/server.py
-```
-
-MCP server の詳細は [tools/kaggle-mcp/README.md](tools/kaggle-mcp/README.md) を参照してください。
-Kaggle 認証の初期設定は [docs/04_kaggle_auth_setup.md](docs/04_kaggle_auth_setup.md) を参照してください。
-
-MCP が使えない場合は CLI adapter fallback として、Kaggle API 認証設定済みの環境で `uv run` 経由の Kaggle CLI を使います。
-
-```bash
-uv run scripts/download_kaggle_competition.sh <competition-slug>
-```
-
-例:
-
-```bash
-uv run scripts/download_kaggle_competition.sh titanic
-```
-
-ダウンロード先は `data/raw/<competition-slug>/` です。
-
-## 新規実装の標準
-
-既存コードの制約がない場合、新規 baseline は以下を標準にします。
-
-- 設定管理: Hydra
-- Logging: loguru
-- 実験管理: MLflow
-- 共通ロジック: `src/<package_name>/` 配下に分離
-- Notebook: EDA / orchestration として使い、core logic は `src` から import
-- Kaggle access: MCP / Gateway 優先、CLI adapter fallback
-
-## 継続的な改善サイクル
-
-精度改善のアイディア出しは人間が行い、agent は実装、実行、ログ更新を担当します。
-人間が見る画面は MLflow UI と生成 HTML report、agent が編集する正本は `aidlc-docs/` の Markdown です。
-
-```bash
-uv run --group research mlflow ui --backend-store-uri sqlite:///mlruns.db
+uv sync --locked
+uv run scripts/init_aidlc_docs.sh --new-project
 uv run python scripts/render_improvement_report.py
 ```
 
-HTML report は `outputs/reports/improvement-report.html` に生成されます。見た目は `docs/assets/improvement-report.css` で管理し、生成 HTML は直接編集しません。
-agent が実験結果レビューや次の仮説選定を人間に依頼する場合も、この HTML report と MLflow UI に誘導する方針です。
+`--new-project` は既存の `aidlc-docs/` を `outputs/doc-backups/` に保管し、空の雛形から始めます。
+通常の再開では初期化を繰り返す必要はありません。欠落ファイルだけ補う場合は引数なしで実行します。
 
-## ディレクトリ構成と役割
+Coding Agent に、そのまま依頼できます。
 
 ```text
-.
-├── docs/                      # ワークフロー解説・プロンプト集（テンプレート共通）
-├── templates/aidlc-docs/      # aidlc-docs/ の正本テンプレート
-├── aidlc-docs/                # プロジェクト固有のドキュメント（派生リポジトリで記入する）
-├── .agents/skills/            # Coding Agent skill 定義
-├── .codex/config.toml          # Codex project-scoped MCP 設定
-├── scripts/                   # 初期化・データ取得スクリプト
-├── docs/assets/                # 生成 HTML report 用 CSS
-├── configs/                   # Hydra 設定テンプレート
-├── data/                      # データ（raw/interim/processed/external）
-├── notebooks/                 # 必要に応じて作成する EDA・baseline Notebook
-├── notebooks_external/        # 外部 Notebook キャッシュ
-├── src/                       # 共通ロジック
-├── tools/kaggle-mcp/          # Kaggle MCP server
-└── outputs/                   # モデル・予測・提出ファイル
+titanic の参加準備をしてください。今回は調査と baseline 計画まで進めたいです。
+異常検知の PoC を検討しています。現行ルールと比較し、2週間で採否を決めたいです。
 ```
 
-`templates/aidlc-docs/` と `aidlc-docs/` は常に同一内容を保ちます。CI がこれを検証します（`.github/workflows/check-template-sync.yml`）。  
-`aidlc-docs/` のファイルをテンプレートにリセットしたい場合:
+[最短手順](docs/02_quickstart.md) · [用途別プロンプト](docs/03_prompt_templates.md) · [Agent 設定](docs/01_agent_execution_guide.md)
+
+## 用途と到達点
+
+| 用途 | 整理すること | 完了の目安 |
+| --- | --- | --- |
+| competition-starter | 規約、データ、評価、提出、初期 CV | 最初の baseline を試せる計画 |
+| competition-winning | Discussion / 解法 / 実装の証拠と条件 | 優先仮説と反証方法 |
+| technical-research | 現行手法、候補技術、自データへの適用 | PoC 範囲と go / no-go 条件 |
+| implementation-only | 既存の決定を確認して実装 | 再実行可能な成果物と評価 |
+| knowledge-reuse | 結果、失敗例、適用条件 | 根拠付き再利用知見 |
+
+用途に関係する文書だけ埋めます。調査から実装へ進むときは、データと評価の契約、最小変更、構成、実行方法を確定します。
+詳細は [設計方針とゲート](docs/00_project_concept.md) を参照してください。
+
+## 付属ツールを使う
+
+| 目的 | 依存関係 |
+| --- | --- |
+| 文書・HTML report・Kaggle CLI | `uv sync --locked` |
+| baseline | `uv sync --locked --group research` |
+| Kaggle MCP | `uv sync --locked --group mcp` |
+| Notebook / 可視化 | `uv sync --locked --group research --group notebooks` |
+
+### Kaggle 情報取得
 
 ```bash
-uv run scripts/init_aidlc_docs.sh --force
+uv run kaggle --version
+uv run kaggle --help
+uv run kaggle competitions files <competition>
+uv run scripts/download_kaggle_competition.sh <competition>
 ```
 
-テンプレートとの差分を確認したい場合:
+ダウンロード先は `data/raw/<competition>/`。サイズ・規約・利用範囲を先に確認します。
+[認証](docs/04_kaggle_auth_setup.md) · [MCP 設定](docs/05_mcp_setup.md) · [MCP の契約](tools/kaggle-mcp/README.md)
+
+MCP は任意です。付属サーバーは取得用 CLI 境界であり、学習コードは固定した local data から実行します。
+
+### 環境確認用 baseline
 
 ```bash
+uv run --group research python -m baseline.train
+```
+
+合成データで Hydra / loguru / MLflow / fold 内前処理 / OOF 保存を確認する例です。
+成果物は `outputs/runs/<run_id>/`、tracking は `sqlite:///mlruns.db`。**この score はコンペや業務の性能を示しません。**
+
+CSV モードでは欠落したファイルをエラーにし、提出には sample submission・ID・予測方式を指定します。
+[baseline の範囲と設定例](docs/02_quickstart.md#baseline-を実データへ接続する) を確認してから使います。
+
+### 結果のレビュー
+
+```bash
+uv run python scripts/render_improvement_report.py
+uv run --group research mlflow ui --backend-store-uri sqlite:///mlruns.db --host 127.0.0.1
+```
+
+人間の閲覧先は `outputs/reports/improvement-report.html` と MLflow UI。agent は `aidlc-docs/` を編集し、HTML を再生成します。
+Tracker が使えない環境では local artifacts を保全し、その限界を記録します。
+ブラウザーで file を開けない場合は [localhost での閲覧手順](docs/02_quickstart.md#閲覧と再開) を使えます。
+
+## 正本と記録
+
+```text
+docs/                       共通の使い方・プロンプト・保守履歴
+templates/aidlc-docs/        空の雛形
+aidlc-docs/                  現在の案件の状態・出典・契約・実験・判断
+.agents/skills/             用途別の作業手順
+configs/ / src/baseline/     環境確認と小規模 tabular 分類の実行例
+scripts/                    初期化・取得・報告・構造検査
+tools/kaggle-mcp/            Kaggle CLI の取得境界
+tests/                      データ保持・評価・提出・外部境界の回帰検証
+outputs/ / data/            local artifacts・取得データ（Git 管理対象外）
+```
+
+**`templates/aidlc-docs/` と `aidlc-docs/` の内容一致は要求しません。** CI は雛形・設定・実行契約を検査し、案件記録の編集を許容します。
+このテンプレート自体の保守記録も `aidlc-docs/` にあります。新規案件では上記 `--new-project` で切り替えます。
+
+```bash
+# 欠落だけ補充 / 必要ファイルの存在を確認
+uv run scripts/init_aidlc_docs.sh
 uv run scripts/init_aidlc_docs.sh --check
+
+# テンプレートと実装の検査
+uv run python scripts/check_template.py
+uv run --group research --group mcp pytest
 ```
+
+2026-10-04 の詳細な変更理由・検証範囲は [改訂記録](docs/06_template_review.md) にまとめています。
+
+## 後から読める用語と実験記録
+
+Agent は一般的な用語と具体的な説明を使い、略語は初出で説明します。
+繰り返し使う名称は問題設定文書の「用語と名称」に保存し、再開時に引き継ぎます。
+実験名には ID と変更内容を添え、報告前に意味が伝わるか確認します。
+詳細は [用語と説明のガイド](docs/07_terminology.md)。用語集は生成 HTML の Problem Overview にも表示されます。

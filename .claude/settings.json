@@ -1,16 +1,1 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(uv:*)",
-      "Bash(uv run kaggle:*)",
-      "Bash(uv run python:*)",
-      "Bash(uv run scripts/*)",
-      "Bash(find:*)",
-      "Bash(ls:*)",
-      "Bash(cat:*)",
-      "Bash(head:*)",
-      "Bash(tail:*)",
-      "Bash(grep:*)"
-    ]
-  }
-}
+{}

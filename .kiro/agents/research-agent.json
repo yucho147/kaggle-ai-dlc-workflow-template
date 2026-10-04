@@ -2,8 +2,10 @@
   "name": "research-agent",
   "description": "Kaggle / Technical Research AI-DLC workflow agent",
   "resources": [
-    "file://.kiro/steering/**/*.md",
-    "file://README.md",
+    "file://AGENTS.md",
+    "file://aidlc-docs/aidlc-state.md",
     "skill://.kiro/skills/**/SKILL.md"
-  ]
+  ],
+  "includeMcpJson": true,
+  "prompt": "AGENTS.md の共通方針と現在の AI-DLC state を確認し、依頼に関係する skill と文書だけを読んで調査・実装・報告を進める。"
 }

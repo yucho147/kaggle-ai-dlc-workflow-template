@@ -1,47 +1,50 @@
-# Python
+# Python / tooling
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
 .venv/
 venv/
+.cache/
+*.egg-info/
+dist/
+build/
 
-# Data and outputs
-data/raw/*
-data/interim/*
-data/processed/*
-data/external/*
-outputs/models/*
-outputs/predictions/*
-outputs/submissions/*
-outputs/reports/*
-outputs/logs/
-notebooks_external/*
+# Data, external code, artifacts and backups
+/data/**
+/outputs/**
+/notebooks_external/**
+!/data/raw/
+!/data/raw/.gitkeep
+!/data/interim/
+!/data/interim/.gitkeep
+!/data/processed/
+!/data/processed/.gitkeep
+!/data/external/
+!/data/external/.gitkeep
+!/outputs/models/
+!/outputs/models/.gitkeep
+!/outputs/predictions/
+!/outputs/predictions/.gitkeep
+!/outputs/submissions/
+!/outputs/submissions/.gitkeep
+!/outputs/reports/
+!/outputs/reports/.gitkeep
+!/notebooks_external/.gitkeep
 
-# Keep directory placeholders
-!data/raw/.gitkeep
-!data/interim/.gitkeep
-!data/processed/.gitkeep
-!data/external/.gitkeep
-!outputs/models/.gitkeep
-!outputs/predictions/.gitkeep
-!outputs/submissions/.gitkeep
-!outputs/reports/.gitkeep
-!notebooks_external/.gitkeep
-
-# MLflow
+# Tracking database and artifact store
 mlruns/
-mlruns.db
+mlartifacts/
+mlruns.db*
+mlflow.db*
+*.sqlite
+*.sqlite3
 
-# Hydra outputs (date-based run directories)
-outputs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
-
-# Local files
+# Local credentials / settings
 .DS_Store
 .env
 .env.*
 kaggle.json
-.cache/
-
-# Claude Code personal settings (project shared settings are .claude/settings.json)
+access_token
+.kaggle/
 .claude/settings.local.json

@@ -1375,7 +1375,7 @@ wheels = [
 
 [[package]]
 name = "kaggle"
-version = "2.2.0"
+version = "2.2.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bleach" },
@@ -1384,84 +1384,95 @@ dependencies = [
     { name = "packaging" },
     { name = "protobuf" },
     { name = "python-dateutil" },
+    { name = "python-dotenv" },
     { name = "python-slugify" },
     { name = "requests" },
     { name = "tqdm" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/50/7a/4e3c1242bc193aad2fdb5fbae3130d0bcab925a36eab4fbf2e494152474e/kaggle-2.2.0.tar.gz", hash = "sha256:ea0cd0331bb3810ffc27955c0a4d5a61bf7dab0a5eb66c4a2135c8f04a9ab94a", size = 211654, upload-time = "2026-05-26T23:27:11.225Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8d/22/9e4d5015aad7c7794af098e3def53a26a7deae3ee2e348c129bc2446260e/kaggle-2.2.4.tar.gz", hash = "sha256:28a58f6c1b9f46ce2afdfb439e0c4e91219e818b377ea4254f4e479456d8cb78", size = 317079, upload-time = "2026-07-23T21:20:57.915Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/15/76/d9e0f07d79ce4040475c68b1214a3c377dd46311cd0184b24e0b339efe08/kaggle-2.2.0-py3-none-any.whl", hash = "sha256:45240a5569bf8fae8e292d245138020c810e7701e557aadd3b7f25a5c64819ac", size = 128473, upload-time = "2026-05-26T23:27:09.996Z" },
+    { url = "https://files.pythonhosted.org/packages/6d/0b/79bbabb2b3f7eaee3bcde7397abf29bbdd8694886f45bef460fca5d71729/kaggle-2.2.4-py3-none-any.whl", hash = "sha256:47d3b258363f4693ade67d875b1c108bfaa87a469f4b6fe85903e7c9757aa09c", size = 126165, upload-time = "2026-07-23T21:20:56.631Z" },
 ]
 
 [[package]]
 name = "kaggle-ai-dlc-workflow-template"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "kaggle" },
+    { name = "markdown-it-py" },
 ]
 
 [package.dev-dependencies]
+columnar = [
+    { name = "polars" },
+    { name = "pyarrow" },
+]
 dev = [
-    { name = "jedi" },
     { name = "pytest" },
     { name = "ruff" },
 ]
 mcp = [
     { name = "mcp" },
 ]
-research = [
-    { name = "hydra-core" },
+notebooks = [
     { name = "ipykernel" },
     { name = "jupyterlab" },
-    { name = "loguru" },
     { name = "matplotlib" },
+    { name = "seaborn" },
+]
+research = [
+    { name = "hydra-core" },
+    { name = "loguru" },
     { name = "mlflow" },
     { name = "numpy" },
     { name = "pandas" },
-    { name = "polars" },
-    { name = "pyarrow" },
     { name = "scikit-learn" },
-    { name = "seaborn" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "kaggle", specifier = ">=2.2.0" }]
+requires-dist = [
+    { name = "kaggle", specifier = ">=2.2.0,<3" },
+    { name = "markdown-it-py", specifier = ">=3,<5" },
+]
 
 [package.metadata.requires-dev]
+columnar = [
+    { name = "polars", specifier = ">=1.41.2" },
+    { name = "pyarrow", specifier = ">=23.0.0,<24" },
+]
 dev = [
-    { name = "jedi", specifier = ">=0.20.0" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "ruff", specifier = ">=0.15.15" },
 ]
-mcp = [{ name = "mcp", specifier = ">=1.0.0" }]
-research = [
-    { name = "hydra-core", specifier = ">=1.3.2" },
+mcp = [{ name = "mcp", specifier = ">=1.0.0,<2" }]
+notebooks = [
     { name = "ipykernel", specifier = ">=7.2.0" },
     { name = "jupyterlab", specifier = ">=4.5.7" },
-    { name = "loguru", specifier = ">=0.7.3" },
     { name = "matplotlib", specifier = ">=3.10.9" },
-    { name = "mlflow", specifier = ">=3.0.0" },
+    { name = "seaborn", specifier = ">=0.13.2" },
+]
+research = [
+    { name = "hydra-core", specifier = ">=1.3.2,<2" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "mlflow", specifier = ">=3.0.0,<4" },
     { name = "numpy", specifier = ">=2.4.6" },
     { name = "pandas", specifier = ">=2.2.0,<3" },
-    { name = "polars", specifier = ">=1.41.2" },
-    { name = "pyarrow", specifier = ">=23.0.0,<24" },
-    { name = "scikit-learn", specifier = ">=1.8.0" },
-    { name = "seaborn", specifier = ">=0.13.2" },
+    { name = "scikit-learn", specifier = ">=1.8.0,<2" },
 ]
 
 [[package]]
 name = "kagglesdk"
-version = "0.1.27"
+version = "0.1.37"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "protobuf" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c5/c0/857146ba30e777148030ce220c6a1bf0b2aa950b0126d9d542fd1f477384/kagglesdk-0.1.27.tar.gz", hash = "sha256:e377d7a6c189d396fcd80500c5dfff3d7089651a0c9bdfda9fb697ccaecea098", size = 179072, upload-time = "2026-05-29T22:50:31.15Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/44/8b/363ad553d5d8f23b10be03ae469cc0f3dd746862bc1213c4d6fac64a4a4b/kagglesdk-0.1.37.tar.gz", hash = "sha256:bc362761754966919f63cb7a702bc34118f9e8fcce038ee00fb30d5d11afbe08", size = 210001, upload-time = "2026-08-06T22:24:04.514Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/43/bc8f89ff37486c60c4850cd80544e7d64765db734d24cbd6b6bcaba31de7/kagglesdk-0.1.27-py3-none-any.whl", hash = "sha256:5de170a9051d209e90df6f9d9873b55f2a9679d64156f1ac19c4622333812b0f", size = 229188, upload-time = "2026-05-29T22:50:29.778Z" },
+    { url = "https://files.pythonhosted.org/packages/07/8e/70c358fcf8f6c41f9e74bc0d6203cb623eab6d4b062758c716d51f621167/kagglesdk-0.1.37-py3-none-any.whl", hash = "sha256:766e7d1e59379941b373957e7d80f612942e63ab4a638d99ae4ee3e9e92f050e", size = 262519, upload-time = "2026-08-06T22:24:03.344Z" },
 ]
 
 [[package]]

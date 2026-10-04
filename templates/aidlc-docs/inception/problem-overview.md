@@ -1,52 +1,48 @@
 # Problem Overview
 
-## Summary
+## 問題と到達点
 
-TBD
+- 利用者 / 意思決定者: TBD
+- 解く問題と、現在の方法の不足: TBD
+- 今回の到達点: 調査 | 設計 | baseline | PoC | 改善 | 引継ぎ
+- タスク: 分類 | 回帰 | 予測 | 画像 | retrieval | generation | simulation | その他
+- 入出力の具体例: TBD
+- 対象に含めること / 対象外: TBD
 
-## Goal
+## 成功条件
 
-TBD
+| 条件 | 指標 / 許容値 | 比較対象 | 評価するデータ | 判断者 |
+| --- | --- | --- | --- | --- |
+| 主目的 | TBD | 現行 / 単純 baseline | TBD | TBD |
+| 実用制約 | latency / cost / memory 等 | TBD | TBD | TBD |
 
-## Task Type
+指標の方向・計算方法・split は `evaluation-contract.md` に集約する。
 
-- Classification
-- Regression
-- Ranking
-- Retrieval
-- Forecasting
-- Segmentation
-- Generation
-- Other:
+## データと制約
 
-## Success Metrics
+- データ取得元 / 利用権限: TBD
+- 本番・提出時に利用できる情報: TBD
+- 計算環境 / 時間 / メモリ / 費用上限: TBD
+- 外部データ / pretrained model / Internet の可否: TBD
+- 秘密・個人情報の持ち出し範囲: TBD（該当しなければ N/A）
+- コンペ規約 / 業務上の判断条件: TBD
 
-- Primary metric:
-- Secondary metric:
-- Business / research success condition:
+## 未決事項
 
-## Data
+| 質問 | 実装への影響 | 解決方法 / 担当 | 進められる作業 |
+| --- | --- | --- | --- |
+| TBD | blocker / assumption | TBD | TBD |
 
-- Source:
-- Files:
-- Train / test split:
-- Target:
-- ID column:
-- Submission format:
+軽微な未決事項は理由付き仮定で進める。成功条件、データ利用許可、評価の意味が変わる事項は解決する。
 
-## Constraints
+## 用語と名称
 
-- Rules:
-- External data:
-- Internet access:
-- Runtime:
-- Memory:
-- Hardware:
+一般的な用語を優先し、初出では短い説明を添える。繰り返し使う専門用語、公式名称、案件固有の名称をここに記録する。
+案件固有の名称は使用前に定義し、具体的なデータ・操作・コードとの対応を書く。不要な独自名は具体的な表現に直す。
 
-## Risks
+| 名称 / 略語 | 種別 | 平易な意味・適用範囲 | 具体例 / コード / 出典 | 旧名・変更理由・日付 |
+| --- | --- | --- | --- | --- |
+| TBD | 一般用語 / 公式名称 / 案件固有 / コード識別子 | TBD | TBD | 該当なし、または旧名と変更理由 |
 
-- Data leakage:
-- CV / LB mismatch:
-- Evaluation ambiguity:
-- Operational constraints:
-
+名称を変更しても既存の実験 ID・設定キーは不用意に変えない。旧名から現在の定義をたどれるようにする。
+詳しい書き方は [用語と説明のガイド](../../docs/07_terminology.md)。

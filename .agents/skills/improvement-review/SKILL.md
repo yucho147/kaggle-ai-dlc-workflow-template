@@ -1,41 +1,22 @@
 ---
 name: improvement-review
-description: Use when preparing for a continuous improvement cycle review. Regenerates the HTML report and guides the human to choose the next experiment hypothesis using the HTML report and MLflow UI instead of Markdown.
+description: Prepare a Kaggle or PoC experiment review by comparing compatible runs, updating evidence and prioritized next hypotheses, then regenerating the HTML report and pointing to MLflow when available.
 metadata:
-  short-description: Prepare improvement cycle review
+  short-description: Prepare experiment review
 ---
 
-# improvement-review
+# Improvement Review
 
-継続的な改善サイクルのレビュー準備をする skill です。HTML report を再生成し、次の仮説選定を人間に案内します。
+Read AGENTS.md, current state, experiment plan/log, evaluation contract, tracking and lessons.
+For a PoC also read poc-decision.md.
 
-## 入力
+## Prepare Before Presenting
 
-なし（`aidlc-docs/operations/` 配下の Markdown を自動的に読み込みます）
+1. Confirm each run's data/split/metric, MLflow or local run ID and actual artifacts. Separate failed, unperformed and completed work.
+2. Compare compatible runs, baseline deltas, fold/seed variability, slices, runtime/cost and inference constraints. State what remains unverified.
+3. Update the experiment facts, interpretations, risks and candidate hypotheses. Give each next candidate evidence, priority, a minimum check, cost and a rejection/stop criterion.
+4. Record only actual adoption decisions; human review is not complete merely because the report was generated.
+5. Regenerate with uv run python scripts/render_improvement_report.py after all source edits.
+6. Present outputs/reports/improvement-report.html as the primary reading surface and MLflow UI when available, using the same backend URI. If tracking is unavailable, identify local artifacts and the limitation.
 
-## 手順
-
-1. `docs/00_project_concept.md` と `AGENTS.md` を読む。
-2. 以下の Operations ドキュメントを読む。
-   - `aidlc-docs/operations/improvement-loop.md`
-   - `aidlc-docs/construction/experiment-plan.md`
-   - `aidlc-docs/operations/experiment-log.md`
-   - `aidlc-docs/operations/cv-lb-tracking.md`
-   - `aidlc-docs/operations/lessons-learned.md`
-3. HTML report を再生成する。
-   ```bash
-   uv run python scripts/render_improvement_report.py
-   ```
-4. 人間には Markdown ではなく `outputs/reports/improvement-report.html` と MLflow UI を見て、次の仮説選定または採用/不採用判断をするよう案内する。
-5. 次に試すべき実験候補を優先順位付きで `aidlc-docs/operations/improvement-loop.md` または `aidlc-docs/construction/experiment-plan.md` に記録する。
-
-## 出力
-
-- 再生成済み `outputs/reports/improvement-report.html`
-- `aidlc-docs/operations/improvement-loop.md` または `aidlc-docs/construction/experiment-plan.md` に優先順位付きの次実験候補
-
-## 完了条件
-
-- HTML report が最新状態で生成されている。
-- 次に試すべき実験候補に優先順位が付いている。
-- 人間が `outputs/reports/improvement-report.html` と MLflow UI を見て判断できる状態になっている。
+Completion means the report is current and the requested decisions are concrete and reviewable. Do not launch new expensive experiments or external submissions just to prepare a review.

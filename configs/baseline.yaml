@@ -1,29 +1,50 @@
+# Explicit synthetic smoke example. Set mode=csv only after defining data/evaluation contracts.
+defaults:
+  - _self_
+  - override hydra/job_logging: disabled
+  - override hydra/hydra_logging: disabled
+
 project:
-  name: baseline
+  name: baseline-smoke
   seed: 42
 
 data:
+  mode: synthetic
   raw_dir: data/raw
-  processed_dir: data/processed
-  train_file: TBD          # e.g. titanic/train.csv
-  test_file: TBD           # e.g. titanic/test.csv
-  sample_submission_file: TBD # e.g. titanic/gender_submission.csv
-  target: TBD              # e.g. Survived
-  id_column: TBD           # e.g. PassengerId
+  train_file: null
+  test_file: null
+  sample_submission_file: null
+  target: null
+  id_column: null
+  synthetic_samples: 1000
 
 validation:
-  strategy: stratified_kfold  # stratified_kfold | kfold
+  strategy: stratified_kfold
   n_splits: 5
-  metric: accuracy            # sklearn scoring string
+  metric: accuracy  # sklearn scorer: larger is better, including negative error scorers
 
 model:
   name: random_forest
-  params: {}
+  params:
+    n_estimators: 50
+    n_jobs: 1
+
+submission:
+  column: null
+  prediction: label  # label | probability (binary only)
+  positive_label: 1
 
 output:
-  dir: outputs
+  dir: outputs/runs
 
 mlflow:
   experiment_name: ${project.name}
   tracking_uri: sqlite:///mlruns.db
   run_name: baseline
+
+hydra:
+  job:
+    chdir: false
+  output_subdir: null
+  run:
+    dir: .

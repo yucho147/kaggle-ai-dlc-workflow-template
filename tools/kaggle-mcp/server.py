@@ -1,281 +1,282 @@
-"""MCP server for Kaggle research workflows.
-
-The server intentionally wraps Kaggle CLI commands instead of importing Kaggle
-internals. This keeps authentication, CLI versioning, and future adapter swaps
-outside training/research orchestration code.
-"""
+"""MCP tools for Kaggle retrieval; CLI execution lives in workflow_tools.kaggle."""
 
 from __future__ import annotations
 
-import json
-import os
-import shlex
-import subprocess
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+import zipfile
+from typing import Any, Literal
 
 from mcp.server.fastmcp import FastMCP
+from mcp.types import ToolAnnotations
 
-mcp = FastMCP("kaggle-mcp")
+from workflow_tools.kaggle import (
+    destination_path,
+    download_competition,
+    extract_archive,
+    finalize,
+    run_kaggle,
+    validate_ref,
+    validate_slug,
+)
 
-
-DEFAULT_TIMEOUT_SECONDS = 120
-
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[2]
-
-
-def _cache_root() -> Path:
-    configured = os.environ.get("KAGGLE_MCP_CACHE_DIR")
-    if configured:
-        return Path(configured).expanduser().resolve()
-    return (_repo_root() / ".cache" / "kaggle-mcp").resolve()
-
-
-def _kaggle_cmd() -> list[str]:
-    return shlex.split(os.environ.get("KAGGLE_MCP_KAGGLE_CMD", "uv run kaggle"))
-
-
-def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def _safe_name(value: str) -> str:
-    safe = "".join(ch if ch.isalnum() or ch in ("-", "_", ".") else "_" for ch in value)
-    return safe.strip("_") or "snapshot"
+mcp = FastMCP(
+    "kaggle-mcp",
+    instructions=(
+        "Use kaggle_cli_version before retrieval. Tools return CLI text with ok/error, "
+        "timestamps and snapshot_path; check failures and truncation. Overview is only "
+        "discovery metadata and URLs, not page content or rules. Record short source summaries "
+        "and revisions in aidlc-docs. Downloads write local files under the project data roots. "
+        "Do not execute pulled notebooks without checking licenses and assumptions."
+    ),
+)
+READ = ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=True)
+DOWNLOAD = ToolAnnotations(readOnlyHint=False, destructiveHint=False, openWorldHint=True)
 
 
-def _write_snapshot(tool_name: str, payload: dict[str, Any]) -> str:
-    cache_dir = _cache_root() / tool_name
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    path = cache_dir / f"{stamp}.json"
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    return str(path)
+def _page(page: int | None) -> list[str]:
+    if page is not None and page < 1:
+        raise ValueError("page must be at least 1.")
+    return ["-p", str(page)] if page is not None else []
 
 
-def _run_kaggle(
-    tool_name: str,
-    args: list[str],
-    *,
-    timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
-) -> dict[str, Any]:
-    command = [*_kaggle_cmd(), *args]
-    started_at = _now_iso()
-    completed = subprocess.run(
-        command,
-        cwd=_repo_root(),
-        text=True,
-        capture_output=True,
-        timeout=timeout_seconds,
-        check=False,
-    )
-    payload: dict[str, Any] = {
-        "tool": tool_name,
-        "source": "kaggle-cli",
-        "command": command,
-        "started_at": started_at,
-        "finished_at": _now_iso(),
-        "returncode": completed.returncode,
-        "stdout": completed.stdout,
-        "stderr": completed.stderr,
-        "ok": completed.returncode == 0,
-    }
-    payload["snapshot_path"] = _write_snapshot(tool_name, payload)
-    return payload
+def _page_size(size: int) -> list[str]:
+    if not 1 <= size <= 200:
+        raise ValueError("page_size must be between 1 and 200.")
+    return ["--page-size", str(size)]
 
 
-def _competition_url(slug: str) -> str:
-    return f"https://www.kaggle.com/competitions/{slug}"
+def _run(tool: str, args: list[str], **metadata: Any) -> dict[str, Any]:
+    return finalize(run_kaggle(tool, args, metadata=metadata))
 
 
-def _topic_ref(competition: str, topic: str) -> str:
-    if "/" in topic:
-        return topic
-    return f"{competition}/{topic}"
+def _url(competition: str) -> str:
+    return f"https://www.kaggle.com/competitions/{validate_slug(competition)}"
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ)
 def kaggle_cli_version() -> dict[str, Any]:
-    """Return Kaggle CLI version and help summary for audit/setup checks."""
-    version = _run_kaggle("kaggle_cli_version", ["--version"])
-    help_result = _run_kaggle("kaggle_cli_help", ["--help"])
+    """Return CLI version and help. This does not prove authenticated API access."""
+    version = _run("kaggle_cli_version", ["--version"])
+    help_result = _run("kaggle_cli_help", ["--help"])
     return {
+        "schema_version": 1,
+        "ok": version["ok"] and help_result["ok"],
         "version": version,
         "help": help_result,
     }
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ)
 def kaggle_competitions_list(
     search: str | None = None,
     page: int | None = None,
     sort_by: str | None = None,
 ) -> dict[str, Any]:
-    """List Kaggle competitions, optionally filtered by a search query."""
-    args = ["competitions", "list"]
+    """Discover competitions. Inspect pagination and exact refs before selecting one."""
+    args = ["competitions", "list", *_page(page)]
     if search:
-        args.extend(["-s", search])
-    if page is not None:
-        args.extend(["-p", str(page)])
+        args += ["-s", search]
     if sort_by:
-        args.extend(["--sort-by", sort_by])
-    return _run_kaggle("kaggle_competitions_list", args)
+        args += ["--sort-by", sort_by]
+    return _run("kaggle_competitions_list", args, query=search, page=page)
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ)
 def kaggle_competition_overview(competition: str) -> dict[str, Any]:
-    """Return lightweight competition metadata discoverable from CLI."""
-    result = _run_kaggle("kaggle_competition_overview", ["competitions", "list", "-s", competition])
-    result["competition"] = competition
-    result["kaggle_url"] = _competition_url(competition)
-    result["evaluation_url"] = f"{_competition_url(competition)}/overview/evaluation"
-    result["rules_url"] = f"{_competition_url(competition)}/rules"
-    result["discussion_url"] = f"{_competition_url(competition)}/discussion"
-    return result
-
-
-@mcp.tool()
-def kaggle_competition_files(competition: str) -> dict[str, Any]:
-    """List files for a Kaggle competition."""
-    result = _run_kaggle(
-        "kaggle_competition_files",
-        ["competitions", "files", "-c", competition],
+    """Return discovery metadata and page URLs, not overview/evaluation/rules bodies."""
+    url = _url(competition)
+    return _run(
+        "kaggle_competition_overview",
+        ["competitions", "list", "-s", competition],
+        competition=competition,
+        metadata_only=True,
+        kaggle_url=url,
+        evaluation_url=f"{url}/overview/evaluation",
+        rules_url=f"{url}/rules",
+        discussion_url=f"{url}/discussion",
     )
-    result["competition"] = competition
-    result["kaggle_url"] = f"{_competition_url(competition)}/data"
-    return result
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ)
+def kaggle_competition_files(
+    competition: str,
+    page_size: int = 100,
+    page_token: str | None = None,
+) -> dict[str, Any]:
+    """List a bounded page of competition files, sizes and any continuation token."""
+    url = _url(competition)
+    args = ["competitions", "files", competition, *_page_size(page_size)]
+    if page_token:
+        args += ["--page-token", page_token]
+    return _run(
+        "kaggle_competition_files",
+        args,
+        competition=competition,
+        page_size=page_size,
+        page_token=page_token,
+        kaggle_url=f"{url}/data",
+    )
+
+
+@mcp.tool(annotations=DOWNLOAD)
 def kaggle_competition_download(
     competition: str,
     output_dir: str | None = None,
     unzip: bool = True,
 ) -> dict[str, Any]:
-    """Download competition data under data/raw/<competition> by default."""
-    destination = Path(output_dir) if output_dir else Path("data") / "raw" / competition
-    destination = (_repo_root() / destination).resolve() if not destination.is_absolute() else destination
-    destination.mkdir(parents=True, exist_ok=True)
-
-    args = ["competitions", "download", "-c", competition, "-p", str(destination)]
-    if unzip:
-        args.append("--unzip")
-    result = _run_kaggle("kaggle_competition_download", args, timeout_seconds=900)
-    result["competition"] = competition
-    result["output_dir"] = str(destination)
-    result["files"] = sorted(str(path) for path in destination.glob("*"))
-    return result
+    """Download to data/raw; extraction validates paths and refuses existing files."""
+    return download_competition(competition, output_dir=output_dir, unzip=unzip)
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ)
 def kaggle_discussions_list(
     competition: str,
-    sort: str = "hot",
+    sort: Literal["hot", "top", "new", "recent", "active", "relevance"] = "top",
     page: int | None = None,
 ) -> dict[str, Any]:
-    """List discussion topics for a competition."""
-    args = ["competitions", "topics", "list", competition, "-s", sort]
-    if page is not None:
-        args.extend(["-p", str(page)])
-    result = _run_kaggle("kaggle_discussions_list", args)
-    result["competition"] = competition
-    result["sort"] = sort
-    result["kaggle_url"] = f"{_competition_url(competition)}/discussion"
-    return result
+    """List one page of topics. top is the supported alternative to invalid votes sort."""
+    url = _url(competition)
+    if sort not in {"hot", "top", "new", "recent", "active", "relevance"}:
+        raise ValueError("Unsupported discussion sort; inspect topics list --help.")
+    args = ["competitions", "topics", "list", competition, "-s", sort, *_page(page)]
+    return _run(
+        "kaggle_discussions_list",
+        args,
+        competition=competition,
+        sort=sort,
+        page=page,
+        kaggle_url=f"{url}/discussion",
+    )
 
 
-@mcp.tool()
-def kaggle_discussion_get(competition: str, topic: str) -> dict[str, Any]:
-    """Show a discussion topic body and comments."""
-    ref = _topic_ref(competition, topic)
-    result = _run_kaggle("kaggle_discussion_get", ["competitions", "topics", "show", ref])
-    result["competition"] = competition
-    result["topic_ref"] = ref
-    result["kaggle_url"] = f"{_competition_url(competition)}/discussion/{_safe_name(ref).split('_')[-1]}"
-    return result
+@mcp.tool(annotations=READ)
+def kaggle_discussion_get(
+    competition: str,
+    topic: str,
+    page_size: int = 100,
+    page_token: str | None = None,
+) -> dict[str, Any]:
+    """Read a topic and a bounded page of comments. Check continuation tokens."""
+    url = _url(competition)
+    parts = topic.split("/")
+    if len(parts) == 2:
+        if parts[0] != competition:
+            raise ValueError("Topic ref must match competition.")
+        topic = parts[1]
+    if not topic.isascii() or not topic.isdigit():
+        raise ValueError("topic must be a numeric ID or competition/ID.")
+    args = ["competitions", "topics", "show", competition, topic, *_page_size(page_size)]
+    if page_token:
+        args += ["--page-token", page_token]
+    return _run(
+        "kaggle_discussion_get",
+        args,
+        competition=competition,
+        topic_ref=f"{competition}/{topic}",
+        page_size=page_size,
+        page_token=page_token,
+        kaggle_url=f"{url}/discussion/{topic}",
+    )
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ)
 def kaggle_notebooks_search(
     query: str,
     competition: str | None = None,
     page: int | None = None,
+    page_size: int = 20,
 ) -> dict[str, Any]:
-    """Search Kaggle notebooks/kernels for a query and optional competition."""
-    args = ["kernels", "list", "--search", query]
+    """Search notebooks with an optional competition filter."""
+    args = ["kernels", "list", "--search", query, *_page(page), *_page_size(page_size)]
     if competition:
-        args.extend(["--competition", competition])
-    if page is not None:
-        args.extend(["-p", str(page)])
-    result = _run_kaggle("kaggle_notebooks_search", args)
-    result["query"] = query
-    result["competition"] = competition
-    result["kaggle_url"] = "https://www.kaggle.com/code"
-    return result
-
-
-@mcp.tool()
-def kaggle_notebook_pull(notebook_ref: str, output_dir: str | None = None) -> dict[str, Any]:
-    """Pull a Kaggle notebook/kernel source."""
-    destination = Path(output_dir) if output_dir else Path("notebooks_external") / _safe_name(notebook_ref)
-    destination = (_repo_root() / destination).resolve() if not destination.is_absolute() else destination
-    destination.mkdir(parents=True, exist_ok=True)
-    result = _run_kaggle(
-        "kaggle_notebook_pull",
-        ["kernels", "pull", notebook_ref, "-p", str(destination)],
-        timeout_seconds=300,
+        args += ["--competition", validate_slug(competition)]
+    return _run(
+        "kaggle_notebooks_search",
+        args,
+        query=query,
+        competition=competition,
+        page=page,
+        page_size=page_size,
+        kaggle_url="https://www.kaggle.com/code",
     )
-    result["notebook_ref"] = notebook_ref
-    result["output_dir"] = str(destination)
-    result["files"] = sorted(str(path) for path in destination.glob("*"))
-    return result
 
 
-@mcp.tool()
+@mcp.tool(annotations=DOWNLOAD)
+def kaggle_notebook_pull(notebook_ref: str, output_dir: str | None = None) -> dict[str, Any]:
+    """Pull source and metadata into notebooks_external; does not execute source."""
+    ref = validate_ref(notebook_ref)
+    destination = destination_path(output_dir, "notebooks_external", ref.replace("/", "_"))
+    payload = run_kaggle(
+        "kaggle_notebook_pull",
+        ["kernels", "pull", ref, "-p", str(destination), "--metadata"],
+        timeout=300,
+        metadata={
+            "notebook_ref": ref,
+            "output_dir": str(destination),
+            "kaggle_url": f"https://www.kaggle.com/code/{ref}",
+        },
+    )
+    payload["files"] = sorted(str(path) for path in destination.iterdir())
+    return finalize(payload)
+
+
+@mcp.tool(annotations=READ)
 def kaggle_datasets_list(search: str, page: int | None = None) -> dict[str, Any]:
-    """Search Kaggle datasets for technical research."""
-    args = ["datasets", "list", "-s", search]
-    if page is not None:
-        args.extend(["-p", str(page)])
-    result = _run_kaggle("kaggle_datasets_list", args)
-    result["query"] = search
-    result["kaggle_url"] = "https://www.kaggle.com/datasets"
-    return result
+    """Search one page of datasets. Inspect dataset versions and licenses separately."""
+    return _run(
+        "kaggle_datasets_list",
+        ["datasets", "list", "-s", search, *_page(page)],
+        query=search,
+        page=page,
+        kaggle_url="https://www.kaggle.com/datasets",
+    )
 
 
-@mcp.tool()
+@mcp.tool(annotations=DOWNLOAD)
 def kaggle_dataset_download(
     dataset_ref: str,
     output_dir: str | None = None,
     unzip: bool = True,
 ) -> dict[str, Any]:
-    """Download a Kaggle dataset under data/external/<dataset_ref> by default."""
-    destination = Path(output_dir) if output_dir else Path("data") / "external" / _safe_name(dataset_ref)
-    destination = (_repo_root() / destination).resolve() if not destination.is_absolute() else destination
-    destination.mkdir(parents=True, exist_ok=True)
-    args = ["datasets", "download", "-d", dataset_ref, "-p", str(destination)]
-    if unzip:
-        args.append("--unzip")
-    result = _run_kaggle("kaggle_dataset_download", args, timeout_seconds=900)
-    result["dataset_ref"] = dataset_ref
-    result["output_dir"] = str(destination)
-    result["files"] = sorted(str(path) for path in destination.glob("*"))
-    return result
-
-
-@mcp.tool()
-def kaggle_submissions_list(competition: str) -> dict[str, Any]:
-    """List submissions for a Kaggle competition."""
-    result = _run_kaggle(
-        "kaggle_submissions_list",
-        ["competitions", "submissions", "-c", competition],
+    """Download to data/external; preserve archives and validate extraction locally."""
+    ref = validate_ref(dataset_ref)
+    destination = destination_path(output_dir, "data/external", ref.replace("/", "_"))
+    payload = run_kaggle(
+        "kaggle_dataset_download",
+        ["datasets", "download", ref, "-p", str(destination)],
+        timeout=900,
+        metadata={
+            "dataset_ref": ref,
+            "output_dir": str(destination),
+            "kaggle_url": f"https://www.kaggle.com/datasets/{ref}",
+        },
     )
-    result["competition"] = competition
-    result["kaggle_url"] = f"{_competition_url(competition)}/submissions"
-    return result
+    if payload["ok"] and unzip:
+        archives = list(destination.glob("*.zip"))
+        if len(archives) != 1:
+            payload.update(
+                ok=False,
+                error={"kind": "extraction", "message": "Expected exactly one dataset archive."},
+            )
+        else:
+            try:
+                payload["extracted"] = extract_archive(Path(archives[0]), destination)
+            except (OSError, ValueError, RuntimeError, zipfile.BadZipFile) as exc:
+                payload.update(ok=False, error={"kind": "extraction", "message": str(exc)})
+    payload["files"] = sorted(str(path) for path in destination.iterdir())
+    return finalize(payload)
+
+
+@mcp.tool(annotations=READ)
+def kaggle_submissions_list(competition: str) -> dict[str, Any]:
+    """Read submission history; never create a submission."""
+    url = _url(competition)
+    return _run(
+        "kaggle_submissions_list",
+        ["competitions", "submissions", competition],
+        competition=competition,
+        kaggle_url=f"{url}/submissions",
+    )
 
 
 if __name__ == "__main__":

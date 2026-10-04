@@ -1,38 +1,27 @@
 # Experiment Plan
 
-## Objective
+## Objective / Baseline
 
-TBD
-
-## Baseline
-
-- Model:
-- Features:
-- Validation:
-- Metric:
+- 評価契約 / 比較 baseline run: TBD
+- Data / split version: TBD
+- 予算・期限・実行環境: TBD
 
 ## Experiments
 
-| ID | Status | Priority | Hypothesis | Change | Expected Impact | Evidence | Stop Condition | Next Action |
+| ID | Status | Priority | Hypothesis / source | Change | Expected impact | Budget | Stop / acceptance condition | Next action |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | exp001 | idea | P1 | TBD | TBD | TBD | TBD | TBD | TBD |
 
-Status values:
+States: `idea -> selected -> specced -> implemented -> executed -> reviewed -> adopted / rejected / iterate`。
+失敗した実行は `failed`。実行の事実と採否判断は区別する。候補は agent も提案でき、採否・優先順位は依頼範囲に従う。
 
-- `idea`: human idea, not selected yet.
-- `selected`: human selected this idea for the next loop.
-- `specced`: implementation scope is written in `code-generation-plan.md`.
-- `implemented`: code/config changes are ready.
-- `executed`: run completed and `experiment-log.md` is updated.
-- `reviewed`: human reviewed MLflow UI and HTML report.
-- `adopted` / `rejected` / `iterate`: final decision for the loop.
+## Comparison
 
-## Validation
-
-- Split:
-- Leakage checks:
-- Seed:
-- Reproducibility:
+- 変更する変数 / 固定する条件: TBD
+- Ablation・baseline 対比・slice の確認: TBD
+- Fold / seed のばらつき、最小改善幅: TBD
+- 最終 holdout / Public LB を消費する条件: TBD
+- 費用対効果・実装複雑度・再現性: TBD
 
 ## Commands
 
@@ -40,14 +29,7 @@ Status values:
 TBD
 ```
 
-## Human Review Surface
+## Review
 
-- MLflow UI: compare runs, params, metrics, artifacts.
-- HTML report: `outputs/reports/improvement-report.html`.
-- Generate HTML with `uv run python scripts/render_improvement_report.py`.
-
-## Done Criteria
-
-- Baseline runs end-to-end.
-- Metric is recorded.
-- Submission or PoC output can be generated.
+`uv run python scripts/render_improvement_report.py` で HTML を生成し、必要なら同じ tracking URI の MLflow UI を案内する。
+人間が判断する前に、結果と次の候補を docs に反映する。

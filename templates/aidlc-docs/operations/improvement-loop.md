@@ -1,86 +1,44 @@
 # Improvement Loop
 
-## Purpose
+## Roles / Sources
 
-継続的な精度改善では、人間が仮説と優先順位を決め、agent が実装、実行、ログ記録を担当する。
-このドキュメントは、その役割分担と成果物の置き場所を固定する。
+- 人間: 成功条件、計算予算、採否、次の優先順位を判断する。
+- Agent: 出典付き仮説を提案し、依頼範囲で実装・実行・結果記録・報告を行う。
+- 正本: `aidlc-docs/` の Markdown。Metrics / artifacts は MLflow と local run directory。
+- 閲覧面: `outputs/reports/improvement-report.html`、必要に応じて MLflow UI。
 
-## Source of Truth
+## Cycle
 
-| 種別 | ファイル / 画面 | 役割 | 編集者 |
-| --- | --- | --- | --- |
-| Human review | MLflow UI | metrics、params、artifacts、model を比較する | 人間が閲覧 |
-| Human review | `outputs/reports/improvement-report.html` | 実験候補、結果、CV/LB、学びをブラウザで読む | script で生成 |
-| Agent source | `aidlc-docs/construction/experiment-plan.md` | 仮説、期待効果、実験候補、優先順位 | 人間 + agent |
-| Agent source | `aidlc-docs/construction/code-generation-plan.md` | 次に agent が実装する狭い spec | agent |
-| Agent source | `aidlc-docs/operations/experiment-log.md` | 実行 command、config、MLflow run、結果の事実 | agent |
-| Agent source | `aidlc-docs/operations/cv-lb-tracking.md` | CV/LB の比較と信頼度 | 人間 + agent |
-| Agent source | `aidlc-docs/operations/lessons-learned.md` | 採用、不採用、再利用知見 | 人間 + agent |
+`idea -> selected -> specced -> implemented -> executed -> reviewed -> adopted / rejected / iterate`
 
-HTML は閲覧用の生成物であり、正本ではない。agent は HTML を直接編集しない。
+1. 結果と失敗類型から仮説を立て、反証条件と予算を付ける。
+2. 同一 data / split / metric で比較できる最小変更を選ぶ。
+3. 小規模確認後に実行し、run の事実と限界を記録する。
+4. 解釈と次候補を更新してから HTML を生成する。
+5. 改善幅、ばらつき、費用、推論制約を含めて判断する。
 
-## Loop State
+依頼済み範囲は再承認を求めない。目的変更、予算増、未許可の提出・公開等が必要なら、その判断に必要な資料を先に揃える。
 
-```text
-idea
-  -> selected
-  -> specced
-  -> implemented
-  -> executed
-  -> reviewed
-  -> adopted / rejected / iterate
-```
-
-## Human Responsibilities
-
-- MLflow UI と `outputs/reports/improvement-report.html` を見て、次に試す仮説を選ぶ。
-- `experiment-plan.md` の priority、expected impact、stop condition を更新する。
-- CV と LB の乖離、リーク懸念、実行コストを判断する。
-- `lessons-learned.md` に採用・不採用理由を残す。
-
-## Agent Responsibilities
-
-- 実装前に `experiment-plan.md` と `code-generation-plan.md` を確認する。
-- 実装内容を小さく保ち、Hydra config / loguru / MLflow logging を維持する。
-- 実行後に `experiment-log.md` と `cv-lb-tracking.md` を更新する。
-- HTML report を再生成する。
-- 実験結果レビュー、次の仮説選定、採用/不採用判断を人間に依頼するときは、Markdown ではなく MLflow UI と HTML report に誘導する。
-
-## Human Confirmation Prompt
-
-agent が人間に判断を依頼する場合は、以下の順序にする。
-
-1. `uv run python scripts/render_improvement_report.py` を実行して HTML report を更新する。
-2. MLflow UI が必要な場合は、起動コマンドまたは URL を案内する。
-3. `outputs/reports/improvement-report.html` を案内する。
-4. 人間には「MLflow UI と HTML report を見て判断してください」と依頼する。
-5. Markdown は必要に応じて参照元として示すが、主な閲覧先にはしない。
-
-## Commands
-
-MLflow UI:
-
-```bash
-uv run --group research mlflow ui --backend-store-uri sqlite:///mlruns.db
-```
-
-Human review HTML:
+## Review Commands
 
 ```bash
 uv run python scripts/render_improvement_report.py
+uv run --group research mlflow ui --backend-store-uri sqlite:///mlruns.db --host 127.0.0.1
 ```
 
-出力先:
+Tracking URI を変更したら UI にも同じ URI を渡す。DB だけでなく artifact store も保全する。
 
-```text
-outputs/reports/improvement-report.html
-```
+## Current Review
 
-## Rules
+- 比較 run / 判断したいこと: TBD
+- 有力候補・理由・期待効果・費用: TBD
+- 未確認事項と次に解消する作業: TBD
 
-- 実験 ID は `exp001`, `exp002` のように連番にする。
-- 人間の仮説は、実装前に `experiment-plan.md` に残す。
-- agent は実行後、command、config、data、CV、LB、MLflow run ID、artifact path を `experiment-log.md` に残す。
-- 結果レビュー後、status は `adopted`, `rejected`, `iterate` のいずれかに寄せる。
-- HTML の見た目は `docs/assets/improvement-report.css` で管理する。
-- 人間への確認依頼では、`outputs/reports/improvement-report.html` と MLflow UI を優先して案内する。
+## 説明の確認
+
+HTML の再生成前に次を確認する。詳しい方針は [用語と説明のガイド](../../docs/07_terminology.md)。
+
+- 前の会話を知らなくても、対象のデータ・変更した処理・比較条件・結果が分かる。
+- 略語は初出で説明し、繰り返し使う名称は [問題設定の用語集](../inception/problem-overview.md#用語と名称) と一致する。
+- 独自の略語や比喩は具体的な表現に直す。必要な案件固有名には定義と参照を付ける。
+- 実験は既存 ID と変更内容で示す。呼び名を変更した場合も過去の記録との対応を残す。

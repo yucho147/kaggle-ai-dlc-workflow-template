@@ -1,182 +1,96 @@
 # 日本語プロンプト集
 
-このファイルは、coding agent に貼り付けて使う日本語プロンプト集です。新しい Kaggle / 技術調査案件では、まず共通開始プロンプトを使い、その後に用途別プロンプトへ進みます。
+必要な例を選び、環境や予算が決まっていれば添えます。調査だけの依頼は実装開始まで進める必要はありません。
 
-## 1. 共通開始プロンプト
+## 共通開始 / 再開
 
 ```text
-このリポジトリでは、Kaggle / 技術調査を AI-DLC 風に進めます。
-
-まず docs/00_project_concept.md、docs/02_quickstart.md、docs/03_prompt_templates.md、AGENTS.md、aidlc-docs/ を読み、現在のワークフロー構成を理解してください。
-
-今回の目的が未確定であれば、実装に入る前に以下を確認してください。
-
-- 用途: competition-starter / competition-winning / technical-research / implementation-only / knowledge-reuse
-- 対象: Kaggle competition slug または技術調査テーマ
-- 実行環境: local / Kaggle Notebook / Colab / cloud VM / CI など
-- 実行スタイル: script-first / notebook-first / hybrid
-- 成果物: 調査ドキュメント / baseline notebook / Python package / submission file / PoC script / report
-- 制約: 外部データ、Internet access、実行時間、メモリ、チーム開発か個人開発か
-
-実装は、Inception の最小ドキュメントと Construction の設計ドキュメントが揃うまで開始しないでください。
-外部情報を取得した場合は、日時、URL または tool / command、判断を aidlc-docs/audit.md に記録してください。
-実験結果レビュー、次の仮説選定、採用/不採用判断を人間に依頼する場合は、uv run python scripts/render_improvement_report.py で HTML report を生成し、Markdown ではなく outputs/reports/improvement-report.html と MLflow UI に誘導してください。
+AGENTS.md、docs/00_project_concept.md、aidlc-docs/ の状態と関連文書を読んでください。
+対象: <コンペ slug / 技術テーマ>
+到達点: <調査 / 設計 / baseline 実行 / 改善 / 引継ぎ>
+環境・予算: <local / Kaggle / cloud、時間・費用上限>
+既存の決定を引き継ぎ、重大な未決事項だけ質問してください。
+軽微な設計は理由付き仮定を記録して進めてください。
 ```
 
-## 2. Kaggle Starter
+## Kaggle Starter
 
 ```text
-Kaggle competition starter を実施してください。
-
-対象コンペ:
-<competition-slug>
-
-目的:
-コンペ概要、評価指標、データ構造、提出形式、初期 EDA / baseline 方針を aidlc-docs/ に整理し、baseline 実装に入れる状態にすること。
-
-手順:
-1. docs/00_project_concept.md、AGENTS.md、.agents/skills/kaggle-starter/SKILL.md、aidlc-docs/ を読んでください。
-2. Kaggle 情報取得は MCP または KaggleGateway 経由を優先してください。MCP がない場合のみ CLI adapter fallback としてください。
-3. Kaggle CLI を使う場合は、実行前に uv run kaggle --version と uv run kaggle --help を確認し、aidlc-docs/audit.md に記録してください。
-4. aidlc-docs/inception/problem-overview.md と aidlc-docs/inception/kaggle-starter.md を更新してください。
-5. 実装前に aidlc-docs/construction/implementation-questionnaire.md を埋め、コード構成、Notebook 方針、Hydra / loguru / MLflow、Kaggle MCP / adapter 方針を確認してください。
-6. aidlc-docs/construction/architecture.md、kaggle-data-access.md、experiment-plan.md を更新してください。
-
-実装は、上記ドキュメントの骨子が揃ってから開始してください。
+<competition-slug> の参加準備をしてください。
+.agents/skills/kaggle-starter/SKILL.md に従い、公式規約・評価・データ・提出形式を確認してください。
+今回は <調査と計画まで / baseline 実行まで> を依頼します。
+データと評価の契約、最初の baseline、CV の根拠、予算内の実験計画を残してください。
+本文未取得や規約未確認は明示し、HTML report を生成してください。
 ```
 
-## 3. Kaggle Winning Research
+## 勝ち筋調査
 
 ```text
-Kaggle winning research を実施してください。
-
-対象コンペ:
-<competition-slug>
-
-目的:
-Discussion / Notebook / Writeup / GitHub 実装から、CV 戦略、特徴量、モデル、ensemble、外部データ、leakage risk、LB shakeup risk、失敗例、再利用できる実装案を抽出すること。
-
-手順:
-1. docs/00_project_concept.md、AGENTS.md、.agents/skills/kaggle-winning-research/SKILL.md、aidlc-docs/ を読んでください。
-2. Discussion / Notebook の取得は MCP または KaggleGateway 経由を優先し、取得元と日時を aidlc-docs/audit.md に記録してください。
-3. 重要 Discussion / Notebook / GitHub 実装は、本文を丸写しせず、要点を aidlc-docs/inception/winning-research.md に要約してください。
-4. Notebook や GitHub 実装を移植候補にする場合は、ライセンス、依存ライブラリ、前提データ構造、移植する module を確認してください。
-5. aidlc-docs/inception/risk-assessment.md、strategy.md、aidlc-docs/construction/implementation-candidates.md を更新してください。
-6. 実装へ進む場合は aidlc-docs/construction/implementation-questionnaire.md と architecture.md を更新し、疎結合な構成に落としてください。
+<competition-slug> の勝ち筋を調査してください。
+.agents/skills/kaggle-winning-research/SKILL.md を読み、<優先観点> を重点的に調べてください。
+調査上限は <時間 / topic・notebook 件数> です。
+Discussion 本文・コメント、writeup、原実装から出典付きの知見を整理してください。
+著者の主張と実測を区別し、失敗例、CV/LB の違い、転用条件、優先仮説と反証方法を残してください。
 ```
 
-## 4. Technical Research
+## 業務 PoC / 技術調査
 
 ```text
-General technical research を実施してください。
-
-技術テーマ:
-<technical-theme>
-
-目的:
-既存手法、公式 docs、論文、GitHub 実装、Kaggle Competition / Discussion / Notebook / Dataset、Hugging Face などの関連知見を整理し、業務 PoC または baseline 実装に入れる状態にすること。
-
-手順:
-1. docs/00_project_concept.md、AGENTS.md、.agents/skills/technical-research/SKILL.md、aidlc-docs/ を読んでください。
-2. 問題設定、成功条件、制約、利用データ、評価方法を aidlc-docs/inception/problem-overview.md に整理してください。
-3. Kaggle MCP を使い、技術テーマに近い Competition / Dataset / Notebook / Discussion を検索してください。
-   - kaggle_competitions_list で関連 competition を探す。
-   - 有望な competition は kaggle_discussions_list / kaggle_discussion_get で手法、CV、失敗例、リーク、LB shakeup を確認する。
-   - kaggle_notebooks_search で再利用できる実装候補を探す。
-   - kaggle_datasets_list で関連 dataset を探す。
-4. Kaggle 由来の知見を、論文・公式 docs・GitHub・Hugging Face と比較し、最良候補と採用しない候補を整理してください。
-5. 調査した情報源、MCP tool、実行コマンド、取得日時、判断を aidlc-docs/audit.md に記録してください。
-6. 実装前に aidlc-docs/construction/implementation-questionnaire.md を埋め、アーキテクチャ、Notebook 方針、Hydra / loguru / MLflow、external service / data access の adapter 境界を確認してください。
-7. aidlc-docs/construction/architecture.md と code-generation-plan.md を更新してください。
+<technical-theme> の技術調査と PoC 計画を作ってください。
+.agents/skills/technical-research/SKILL.md に従ってください。
+業務上の問題: <具体例>
+現行の方法: <比較対象>
+利用データ・制約: <利用可能な情報 / latency / 費用 / 権限>
+期限: <日時>
+候補を原資料で比較し、最小 PoC、評価データ、成功・継続・中止の条件を決めてください。
+関連する場合は Kaggle / Hugging Face の実装も調べてください。
 ```
 
-## 5. 実装前設計の擦り合わせ
+## 実装前設計
 
 ```text
-まだ実装せず、実装前設計だけを擦り合わせてください。
-
-対象:
-<competition-slug または technical-theme>
-
-以下の観点を aidlc-docs/construction/implementation-questionnaire.md に質問形式で整理し、回答できるものは仮定を置いて埋めてください。判断に迷うものは実装前に質問してください。
-
-- コンペ種別または技術領域: tabular / CV / NLP / recsys / simulation / code competition / other
-- 実行スタイル: script-first / notebook-first / hybrid
-- アーキテクチャ: layered / clean-ish / onion / notebook wrapper / competition-specific engine
-- ディレクトリ構成: `src/<package_name>/` 配下の module 分割
-- 設定管理: 新規コードでは Hydra を使う
-- logging: loguru を使う
-- 実験管理: MLflow を必須にする
-- Notebook 方針: Notebook は `src` の共通ロジックを呼び出す
-- Kaggle access: MCP / KaggleGateway を優先し、CLI は adapter fallback にする
-- validation: split strategy、metric、leakage check
-- submission / PoC output: id column、target column、出力先
-
-その後、aidlc-docs/construction/architecture.md と code-generation-plan.md に、疎結合な実装方針をまとめてください。
+今回は設計まで進めてください。
+対象: <theme>
+既存の問題設定・data / evaluation contract を確認し、
+implementation-questionnaire.md、architecture.md、code-generation-plan.md に
+最小の構成、設定、tracker、Notebook 方針、実行・検証コマンドを記録してください。
+過剰な共通 framework を作らず、実際の変更境界を決めてください。
 ```
 
-## 6. Baseline 実装依頼
+## Baseline / PoC 実装
 
 ```text
-baseline 実装を開始してください。
-
-実装前に以下を確認してください。
-
-- aidlc-docs/inception/problem-overview.md
-- 用途に応じた inception doc
-- aidlc-docs/construction/implementation-questionnaire.md
-- aidlc-docs/construction/architecture.md
-- aidlc-docs/construction/experiment-plan.md または code-generation-plan.md
-
-新規コードの場合は、以下を標準として実装してください。
-
-- Hydra で設定管理する
-- loguru で logging する
-- MLflow で params / metrics / config / artifacts / submission を記録する
-- Kaggle access は KaggleGateway interface 経由にし、MCP adapter 優先、CLI adapter fallback にする
-- entrypoint は薄く保ち、data / features / models / validation / tracking / submission を分離する
-- Notebook を作る場合も、core logic は `src/<package_name>/` から import する
-
-実装後は、実行コマンドと結果を aidlc-docs/operations/experiment-log.md に記録してください。
-人間にレビューを依頼する前に、uv run python scripts/render_improvement_report.py を実行し、outputs/reports/improvement-report.html と MLflow UI を見るよう案内してください。
+決定済みの <experiment / hypothesis ID> を実装し、<予算> の範囲で実行してください。
+問題、data / evaluation contract、architecture、実験計画を確認し、
+不足する重大判断だけ質問してください。
+Hydra / loguru / MLflow を標準とし、fold 内 fit と出力契約を検証してください。
+Resolved config、data / split version、run ID、OOF、artifact、失敗を含む結果を残し、
+HTML report を生成してください。
 ```
 
-## 7. 継続改善レビュー依頼
+## 継続改善レビュー
 
 ```text
-継続的な改善サイクルのレビュー準備をしてください。
-
-手順:
-1. aidlc-docs/operations/improvement-loop.md を読んでください。
-2. aidlc-docs/construction/experiment-plan.md、aidlc-docs/operations/experiment-log.md、cv-lb-tracking.md、lessons-learned.md を確認してください。
-3. uv run python scripts/render_improvement_report.py を実行して HTML report を更新してください。
-4. 人間には Markdown ではなく、outputs/reports/improvement-report.html と MLflow UI を見て、次の仮説選定または採用/不採用判断をするよう案内してください。
+.agents/skills/improvement-review/SKILL.md に従い、レビュー資料を準備してください。
+同じ評価条件の run を比較し、改善幅・ばらつき・費用・未確認事項を整理してください。
+次の仮説を根拠・反証条件・予算付きで提案し、docs を更新してから HTML を生成してください。
+採否と次の優先順位を判断できる状態にしてください。
 ```
 
-## 8. Kaggle MCP 設計依頼
+## 知見の再利用 / 引継ぎ
 
 ```text
-Kaggle MCP の設計案を作ってください。
+<対象 run / 過去案件> の知見を再利用可能に整理してください。
+出典、実測、失敗例、適用条件、license、再実行方法を確認し、
+lessons-learned.md と reusable-patterns.md に記録してください。
+PoC の場合は poc-decision.md に採否・残課題・引継ぎ先を記録してください。
+```
 
-目的:
-Kaggle の Competition / Discussion / Notebook / Dataset / Submission 取得を抽象化し、training code や feature code が Kaggle CLI に直接依存しないようにすること。
+## テンプレートの保守
 
-まず aidlc-docs/construction/kaggle-data-access.md を更新してください。
-
-優先 tool:
-1. kaggle_cli_version
-2. kaggle_competitions_list
-3. kaggle_competition_overview
-4. kaggle_competition_files
-5. kaggle_competition_download
-6. kaggle_discussions_list
-7. kaggle_discussion_get
-8. kaggle_notebooks_search
-9. kaggle_notebook_pull
-10. kaggle_datasets_list
-11. kaggle_dataset_download
-12. kaggle_submissions_list
-
-各 tool の input / output schema、認証情報の扱い、cache directory、rate limit / retry、audit log への記録方法を提案してください。
-実装が必要な場合は、まず code-generation-plan.md に実装範囲と file 構成を書いてから進めてください。
+```text
+このリポジトリ自体を改善してください。
+docs と seed、skills、client 設定、scripts、baseline、report、CI をレビューし、
+派生案件の記録を保全できることを確認してください。
+変更理由と検証範囲を docs/06_template_review.md と aidlc-docs/ に残してください。
 ```

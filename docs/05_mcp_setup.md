@@ -1,163 +1,60 @@
-# MCP サーバーセットアップ
+# MCP Setup
 
-このテンプレートは3つの MCP サーバーをデフォルトで設定しています。
+MCP は任意です。付属設定の既定 server は **kaggle** です。論文・モデル検索は必要な案件で追加します。
+ロックされていない `uvx` package を毎回起動時に取得する構成は標準から外しています。
 
-| サーバー | 用途 |
-| --- | --- |
-| `kaggle` | Competition / Discussion / Notebook / Dataset 取得 |
-| `arxiv` | 論文検索・取得 |
-| `huggingface` | モデル・Dataset・Spaces 検索 |
-
----
-
-## Codex
-
-Codex はリポジトリルートの `.codex/config.toml` を project-scoped configuration として読み込みます。Codex CLI と IDE extension で同じ設定が共有されます。
-
-ローカルの stdio server には、リポジトリルートを `cwd` として指定し、`uv` の cache / tool directory を `.cache/` 配下に固定しています。これにより、sandbox 内から書き込みできない `~/.cache/uv` や `~/.local/share/uv/tools` を参照して起動に失敗することを防ぎます。初回 dependency 解決を考慮し、startup timeout は 60 秒に設定しています。
+## Local Kaggle Server
 
 ```bash
-cd /path/to/kaggle-ai-dlc-workflow-template
-codex
+uv sync --locked --group mcp
+uv run --locked --group mcp python tools/kaggle-mcp/server.py
 ```
 
-初回はプロジェクトを trust してください。起動後、以下で MCP server と repository skill を確認できます。
+Repository root から起動します。stdio は MCP protocol 専用で、実行結果は JSON response と snapshot に保存します。
+認証は [Kaggle setup](04_kaggle_auth_setup.md)、tool の input / output は [server README](../tools/kaggle-mcp/README.md) を参照してください。
 
-```text
-/mcp
-/skills
-```
+## Client Settings
 
-Skills の正本は `.agents/skills/` です。Codex はこのディレクトリを自動検出するため、`.codex/skills/` へのコピーやリンクは不要です。
+| Client | 付属ファイル | 確認 |
+| --- | --- | --- |
+| Codex | .codex/config.toml | /mcp または codex mcp list |
+| Claude Code | .mcp.json | /mcp と project server の trust |
+| Kiro CLI | .kiro/settings/mcp.json | client の MCP 表示と log |
+| Copilot CLI | .mcp.json（対応版・trusted folder） | /mcp list / /mcp show kaggle |
 
-コマンドラインから MCP 設定だけを確認する場合:
+Codex の project settings は trusted project に適用されます。
+[OpenAI MCP docs](https://developers.openai.com/codex/mcp) の cwd / timeout / tool allowlist を確認してください。
+相対 cwd は client の起動位置に依存するため、repository root で起動し、必要なら絶対パスへ変更します。
 
-```bash
-codex mcp list
-```
+Client ごとの MCP 設定 schema を混用しません。汎用 `tools: ["*"]` や shell の一括許可をテンプレート側で追加しません。
 
----
+現在の [Copilot CLI 公式手順](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers) は project の `.mcp.json` / `.github/mcp.json` を読み込むと説明しています。付属 `.mcp.json` は stdio 型を明示します。旧版では対応状況を help で確認してください。
 
-## Claude Code
+## Optional Sources
 
-プロジェクトルートの `.mcp.json` が自動で読み込まれます。追加設定は不要です。
+- Hugging Face: [公式 MCP 説明](https://huggingface.co/docs/hub/en/agents-mcp) の endpoint・認証・現在の tools を確認して追加。
+- arXiv: 採用する server の repository、license、package version、保存先を確認して導入。第三者 server を arXiv 公式 API と混同しない。
+- 公式 Web / 論文 / GitHub は MCP なしでも調査可能。
 
-`.claude/commands/` にプロジェクト固有のスラッシュコマンドが定義されており、セッション内から直接呼び出せます。
+利用する server の版・起動 command・取得 source を audit に記録します。
+付属 Kaggle server は論文検索やモデル inference を行いません。
 
-| コマンド | 用途 |
-| --- | --- |
-| `/kaggle-starter <slug>` | Kaggle コンペ参加開始: データ・評価指標・baseline 方針を整理する |
-| `/kaggle-winning-research <slug>` | Discussion / Notebook から勝ち筋・失敗例・実装候補を抽出する |
-| `/technical-research <theme>` | 業務 PoC / 技術調査: 候補手法・実装候補・PoC スコープを整理する |
-| `/improvement-review` | 継続改善: HTML report 再生成・次の仮説選定を人間に案内する |
+## Environment / Timeout
 
-HuggingFace のプライベートモデルやプライベート Dataset を使う場合は `.env` に追加してください。
+- `UV_CACHE_DIR=.cache/uv` を付属 stdio config で指定。
+- Server は repository root と保存先を固定し、起動 cwd に依存して別 project へ書き込まない。
+- Read command は120秒、download は900秒の上限。Client 側 timeout も整合させる。
+- 初回依存の導入は手動で先に実行し、起動時の解決負荷を減らす。
+- 秘密 token は client の認証・環境変数管理から渡す。`.env` の自動読込は仮定しない。
 
-```bash
-HF_TOKEN=hf_xxxxxxxxxxxxxxxxxxxx
-```
+## Connection Evidence
 
----
+次を区別して記録します。
 
-## GitHub Copilot CLI
+1. 設定ファイルの構造検査。
+2. MCP initialize / tools list。
+3. CLI version / help。
+4. 対象の認証付き API と本文取得。
+5. Download したデータの version / schema。
 
-Copilot CLI はプロジェクトレベルの設定ファイルに対応していないため、ユーザーレベルの設定ファイルに追記してください。
-
-```bash
-~/.copilot/mcp-config.json
-```
-
-以下の内容を `mcpServers` に追記します。`<project-root>` はこのリポジトリの絶対パスに置き換えてください。
-
-```json
-{
-  "mcpServers": {
-    "kaggle": {
-      "type": "stdio",
-      "command": "uv",
-      "args": ["run", "--group", "mcp", "python", "<project-root>/tools/kaggle-mcp/server.py"],
-      "cwd": "<project-root>",
-      "env": {
-        "UV_CACHE_DIR": "<project-root>/.cache/uv"
-      },
-      "tools": ["*"]
-    },
-    "arxiv": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": ["arxiv-mcp-server"],
-      "cwd": "<project-root>",
-      "env": {
-        "UV_CACHE_DIR": "<project-root>/.cache/uv",
-        "UV_TOOL_DIR": "<project-root>/.cache/uv-tools"
-      },
-      "tools": ["*"]
-    },
-    "huggingface": {
-      "type": "http",
-      "url": "https://huggingface.co/mcp",
-      "tools": ["*"]
-    }
-  }
-}
-```
-
-設定後、Copilot CLI セッション内で確認できます。
-
-```
-/mcp show
-```
-
----
-
-## 各サーバーの主なツール
-
-### kaggle
-
-`tools/kaggle-mcp/server.py` に実装されています。
-
-- `kaggle_competitions_list` — コンペ一覧
-- `kaggle_competition_overview` — コンペ概要
-- `kaggle_competition_files` — データファイル一覧
-- `kaggle_competition_download` — データダウンロード
-- `kaggle_discussions_list` — Discussion 一覧
-- `kaggle_discussion_get` — Discussion 詳細
-- `kaggle_notebooks_search` — Notebook 検索
-- `kaggle_notebook_pull` — Notebook 取得
-- `kaggle_datasets_list` — Dataset 一覧
-- `kaggle_dataset_download` — Dataset ダウンロード
-- `kaggle_submissions_list` — 提出履歴
-
-Kaggle 認証が必要な操作は [docs/04_kaggle_auth_setup.md](04_kaggle_auth_setup.md) を参照してください。
-
-### arxiv
-
-- `search_papers` — キーワード・カテゴリ・日付で論文検索
-- `download_paper` — arXiv ID を指定して論文をダウンロード
-- `read_paper` — ダウンロード済み論文をテキストで読む
-- `list_papers` — ローカルにキャッシュされた論文一覧
-
-### huggingface
-
-HuggingFace 公式リモートサーバー（`https://huggingface.co/mcp`）です。インストール不要。
-
-- モデル・Dataset の検索とメタデータ取得
-- Spaces（Gradio アプリ）の実行
-- Inference API 経由のモデル推論
-
----
-
-## 前提
-
-- `uv` がインストール済みであること（Kaggle / arxiv）
-- Kaggle 認証設定済みであること（Kaggle の一部 tool）
-- Codex で project-scoped configuration を使う場合は、プロジェクトを trust していること
-
-## Troubleshooting
-
-`MCP startup failed` とともに `Operation not permitted` が表示される場合は、エラーの参照先を確認してください。
-
-- `~/.cache/uv`: `UV_CACHE_DIR` が書き込み可能な場所を指していない。
-- `~/.local/share/uv/tools`: `uvx` 用の `UV_TOOL_DIR` が書き込み可能な場所を指していない。
-- `tools/kaggle-mcp/server.py` が見つからない: MCP process の `cwd` がリポジトリルートではない。
-- 10 秒前後で終了する: 初回 dependency 解決に対して startup timeout が短い。
+低い段階の成功を全体の接続成功と記載しません。取得失敗や切り詰めは source register に残します。

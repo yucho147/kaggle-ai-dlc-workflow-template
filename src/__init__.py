@@ -1,2 +1,1 @@
 """Workflow template package placeholder."""
-

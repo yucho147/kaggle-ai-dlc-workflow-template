@@ -61,6 +61,7 @@ a:hover {
   padding: 24px 18px;
   position: sticky;
   top: 0;
+  overflow-y: auto;
 }
 
 .brand {
@@ -363,6 +364,8 @@ h4 {
   font-size: 12px;
   margin: 0;
   padding: 6px 10px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 p {
@@ -421,6 +424,7 @@ code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.9em;
   padding: 2px 5px;
+  overflow-wrap: anywhere;
 }
 
 pre {
@@ -504,6 +508,59 @@ li + li {
 .status-iterate {
   background: var(--amber-soft);
   color: var(--amber);
+}
+
+.status-failed {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.status-pending,
+.status-active {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+.status-complete,
+.status-succeeded {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.skip-link {
+  background: #ffffff;
+  left: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: -80px;
+  z-index: 10;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+@media print {
+  .app-shell {
+    display: block;
+  }
+
+  .side-nav,
+  .hero-actions,
+  .skip-link {
+    display: none;
+  }
+
+  .page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .hero,
+  .doc-section,
+  .guide-card {
+    box-shadow: none;
+  }
 }
 
 .footer {

@@ -1,19 +1,14 @@
 # Lessons Learned
 
-## What Worked
+## Findings
 
-| Experiment | Finding | Why It Worked | Reuse |
-| --- | --- | --- | --- |
-| TBD | TBD | TBD | TBD |
+| Hypothesis / run / source | Observation | Interpretation / confidence | Decision | Reuse / retry condition |
+| --- | --- | --- | --- | --- |
+| TBD | TBD | TBD | adopted / rejected / iterate | TBD |
 
-## What Did Not Work
+## Limits
 
-| Experiment | Finding | Likely Reason | Avoid / Retry Condition |
-| --- | --- | --- | --- |
-| TBD | TBD | TBD | TBD |
-
-## Reusable Knowledge
-
-| Pattern | Context | Notes |
-| --- | --- | --- |
-| TBD | TBD | TBD |
+- 再現未確認の主張: TBD
+- 試して効果がなかった変更と条件: TBD
+- 評価設計やデータの変更で無効になる知見: TBD
+- 次回の調査・実装で最初に確認すること: TBD

@@ -1,66 +1,31 @@
 ---
 name: kaggle-winning-research
-description: Use when researching a Kaggle competition discussions, notebooks, writeups, and reusable implementations to extract winning strategies, CV design, features, models, ensembles, external data, leakage risks, LB shakeup risks, failed approaches, and prioritized experiment ideas.
+description: Research Kaggle discussions, final writeups and implementations to derive evidence-backed hypotheses, CV design, failure cases and reuse conditions. Use for solution research, not routine competition setup.
 metadata:
-  short-description: Research Kaggle winning strategies
+  short-description: Investigate winning approaches
 ---
 
-# kaggle-winning-research
+# Kaggle Winning Research
 
-Kaggle Discussion / Notebook / Writeup から勝ち筋、注意点、実装候補を抽出するための skill です。
+Read AGENTS.md, the current state and competition constraints.
+Define whether the target is an active competition, retrospective analysis or transfer to another task.
+Record search cutoff, budget, topic/notebook coverage and prioritized questions.
 
-## 入力
+## Evidence Collection
 
-- Kaggle competition slug
-- 任意: 調査対象トピック数、Notebook 数、重視観点
+- Use the actual installed CLI help. Bundled topics sort supports top/hot/recent; votes is not a valid sort. A leaderboard is not a substitute for discussion content.
+- Read topic bodies and relevant comments, following pagination within the budget. Search notebooks with the competition filter and inspect original writeups and repositories.
+- Record title, author, URL/ref, publication and retrieval dates, revision and snapshot. Separate observed facts, reported results and inferred hypotheses.
+- Compare CV, features, model/loss, ensembles, external data, leakage, Public/Private shakeup, inference constraints and failed approaches where relevant.
+- Distinguish information available during the competition from post-deadline knowledge. Popularity, Public LB and final Private results are different evidence.
+- For reuse, inspect license, dependencies, data shape, fit boundaries, compute requirements and offline inference. Unclear license remains unknown.
 
-## 手順
+## Synthesis
 
-1. `docs/00_project_concept.md` と `AGENTS.md` を読む。
-2. `aidlc-docs/` がなければ `uv run scripts/init_aidlc_docs.sh` を実行する。
-3. Discussion topics を MCP 優先で取得する。MCP が使えない場合は CLI adapter fallback を使う。
-   - MCP: `kaggle_discussions_list(competition=<slug>, sort="hot")` で重要トピックを取得する。
-   - MCP: `kaggle_discussions_list(competition=<slug>, sort="votes")` でも取得し、補完する。
-   - MCP fallback / CLI: `uv run kaggle competitions leaderboard -c <competition> --show` 等で代替する。
-4. 重要トピックの本文とコメントツリーを読む。
-   - MCP: `kaggle_discussion_get(competition=<slug>, topic=<topic_id>)` で詳細を取得する。
-5. Notebook / Writeup / GitHub 実装を検索する。
-   - MCP: `kaggle_notebooks_search(query=<theme>, competition=<slug>)` で実装候補を取得する。
-   - MCP fallback / CLI: `uv run kaggle kernels list -c <competition>` で代替する。
-6. 知見を以下に分類する。
-   - CV
-   - Feature Engineering
-   - Model
-   - Loss / Metric
-   - Ensemble
-   - External Data
-   - Data Leakage
-   - LB shakeup
-   - Inference
-   - Runtime / Memory
-   - Failed approaches
-   - Reusable ideas
-7. Notebook / GitHub 実装を参考にする場合、ライセンス、依存ライブラリ、前提データ構造、移植対象 module を確認する。
-8. 実装へ進む前に、`aidlc-docs/construction/implementation-questionnaire.md` と `architecture.md` を更新する。
-   - notebook 由来のロジックを `src` に分離できるか
-   - model / feature / validation / tracking を差し替え可能にできるか
-   - Kaggle Discussion / Notebook 取得を MCP / Gateway 経由にできるか
-9. 最初に試す実験候補を優先順位付きで整理する。
+Update winning-research.md, source-register.md, relevant risks, strategy.md and implementation-candidates.md.
+Prioritize a few falsifiable hypotheses with applicable conditions, minimum experiments, cost and rejection criteria.
+A reported winning method becomes a local recommendation only after considering the current data and evaluation contract.
 
-## 出力
-
-- `aidlc-docs/inception/winning-research.md`
-- `aidlc-docs/inception/risk-assessment.md`
-- `aidlc-docs/inception/strategy.md`
-- `aidlc-docs/construction/implementation-candidates.md`
-- `aidlc-docs/construction/implementation-questionnaire.md`
-- `aidlc-docs/construction/architecture.md`
-- `aidlc-docs/construction/experiment-plan.md`
-
-## 完了条件
-
-- 重要 Discussion が整理されている。
-- 有力 Notebook / Writeup が整理されている。
-- 勝ち筋の候補がある。
-- リスクと禁止事項が整理されている。
-- 最初の実験計画がある。
+If implementation is requested, update the relevant contracts and construction decisions.
+For a research-only request, do not require finalized code architecture.
+Write retrieval failures and assumptions in audit.md, update state, and regenerate the HTML report.

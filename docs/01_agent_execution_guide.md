@@ -1,302 +1,66 @@
 # Agent Execution Guide
 
-このテンプレートを Codex、GitHub Copilot CLI、Claude Code、Kiro CLI で実行するための手順です。
+新規案件の作成・依存導入は [Quickstart](02_quickstart.md) を参照してください。
+入口指示は `AGENTS.md`、手順は `.agents/skills/` に集約しています。
 
-各ツールに共通して、**このリポジトリは GitHub Template Repository です**。まず GitHub の「Use this template」で新しいリポジトリを作り、そちらで作業してください。
+## Clients
 
-新しいリポジトリに clone したら、依存関係を同期します。
+| Client | 起動例 | この repository の入口 |
+| --- | --- | --- |
+| Codex | codex | AGENTS.md、.agents/skills/、.codex/config.toml |
+| Claude Code | claude | CLAUDE.md、.claude/commands/、.mcp.json |
+| GitHub Copilot CLI | copilot | .github/copilot-instructions.md、AGENTS.md、.mcp.json |
+| Kiro CLI | kiro-cli chat | .kiro/steering/agents.md、.kiro/agents/research-agent.json |
 
-```bash
-cd /path/to/your-project
-uv sync
-```
+MCP の trust・OAuth・有効化は client の仕様とユーザー設定に従います。
+ファイルがあることと、実際に読み込まれたこと・認証付き API が成功したことは別に確認します。
+この改訂で GUI / 各 client の対話起動は実機検証していません。
 
-`aidlc-docs/` はすでにプレースホルダーが入った状態で含まれています。
+## Codex
 
-## 共通の開始プロンプト
+Repository skills の配置と trusted project の MCP configuration は
+[OpenAI の skills](https://developers.openai.com/codex/skills) と [MCP](https://developers.openai.com/codex/mcp) の公式資料で確認します。
 
-どの coding agent でも、最初は [docs/03_prompt_templates.md](03_prompt_templates.md) の日本語プロンプトを渡します。最小版は以下です。
-
-```text
-このリポジトリでは、Kaggle / 技術調査を AI-DLC 風に進めます。
-
-まず docs/00_project_concept.md、docs/02_quickstart.md、docs/03_prompt_templates.md、AGENTS.md、aidlc-docs/ を読み、現在のワークフロー構成を理解してください。
-
-今回の目的が未確定であれば、以下を確認してください。
-
-- 用途: competition-starter / competition-winning / technical-research / implementation-only / knowledge-reuse
-- 対象: Kaggle competition slug または技術調査テーマ
-- 実行環境: local / Kaggle Notebook / Colab / cloud VM / CI など
-- 実行スタイル: script-first / notebook-first / hybrid
-- 成果物: 調査ドキュメント / baseline notebook / Python package / submission file / PoC script / report
-- 制約: 外部データ、Internet access、実行時間、メモリ、チーム開発か個人開発か
-
-実装は、Inception の最小ドキュメントと Construction の設計ドキュメントが揃うまで開始しないでください。
-外部情報を取得した場合は、日時、URL または tool / command、判断を aidlc-docs/audit.md に記録してください。
-```
-
-## Codex CLI
-
-### インストール
-
-公式 docs では、macOS / Linux の standalone installer が案内されています。
-
-```bash
-curl -fsSL https://chatgpt.com/codex/install.sh | sh
-```
-
-### 対話実行
-
-```bash
-cd /path/to/kaggle-ai-dlc-workflow-template
-codex
-```
-
-初回はプロジェクトを trust してください。Codex は `AGENTS.md` と `.agents/skills/` を自動検出し、trusted project では `.codex/config.toml` の MCP 設定も読み込みます。
-
-起動後、以下で設定を確認できます。
-
-```text
-/skills
-/mcp
-```
-
-3つの repository skill と `kaggle` / `arxiv` / `huggingface` MCP server が表示されたら、共通の開始プロンプトを貼り付けます。
-
-この構成は 2026-06-05 に Codex で repository skills の検出、各 MCP server の初期化、tool list の取得まで動作確認済みです。
-
-### このテンプレートでの使い方
-
-Kaggle Starter を始める場合:
-
-```text
-Kaggle competition starter を実施してください。
-
-対象コンペ:
-<competition-slug>
-
-まず docs/00_project_concept.md、AGENTS.md、.agents/skills/kaggle-starter/SKILL.md、aidlc-docs/ を読んでください。
-Kaggle 情報取得は MCP または KaggleGateway 経由を優先し、MCP がない場合は CLI adapter fallback としてください。
-実装は、problem-overview.md、kaggle-starter.md、implementation-questionnaire.md、architecture.md、kaggle-data-access.md、experiment-plan.md の骨子が揃ってから開始してください。
-```
-
-Technical Research を始める場合:
-
-```text
-General technical research を実施してください。
-
-技術テーマ:
-<technical-theme>
-
-docs/00_project_concept.md、AGENTS.md、.agents/skills/technical-research/SKILL.md、aidlc-docs/ を読み、
-problem-overview.md、technical-research.md、risk-assessment.md、implementation-questionnaire.md、architecture.md、code-generation-plan.md を整理してください。
-```
-
-## GitHub Copilot CLI
-
-### インストール
-
-公式 docs では、Node.js 22 以降での npm インストール、または Homebrew が案内されています。
-
-```bash
-npm install -g @github/copilot
-```
-
-macOS / Linux で Homebrew を使う場合:
-
-```bash
-brew install copilot-cli
-```
-
-### 認証
-
-```bash
-copilot
-```
-
-対話セッション内で:
-
-```text
-/login
-```
-
-またはコマンドとして:
-
-```bash
-copilot login
-```
-
-### 対話実行
-
-```bash
-cd /path/to/kaggle-ai-dlc-workflow-template
-copilot
-```
-
-起動後、共通の開始プロンプトを貼り付けます。
-
-### 非対話実行
-
-単発で依頼する場合は `-p` を使います。
-
-```bash
-copilot -p "docs/00_project_concept.md、AGENTS.md、aidlc-docs/ を読み、このテンプレートの現在状態を要約してください。"
-```
-
-Kaggle Starter の初動を依頼する場合:
-
-```bash
-copilot -p "Kaggle competition starter を開始します。対象コンペは <competition-slug> です。docs/00_project_concept.md、AGENTS.md、.agents/skills/kaggle-starter/SKILL.md、aidlc-docs/ を読み、実装前に必要な確認事項を整理してください。"
-```
-
-継続改善レビューを依頼する場合:
-
-```bash
-copilot -p "継続的な改善サイクルのレビュー準備をしてください。AGENTS.md、.agents/skills/improvement-review/SKILL.md、aidlc-docs/operations/ を読み、HTML report を再生成して次の仮説選定を案内してください。"
-```
+Project root から起動し、`/skills`、`/mcp` で現在読み込まれた一覧を確認します。
+用途を明示する場合は `$kaggle-starter` 等を指定できます。付属 skill は4つです。
+Project config は sandbox / approval を広げません。必要な設定を確認してから project を trust します。
 
 ## Claude Code
 
-### インストール
+`CLAUDE.md` から共通指示を import し、commands は正本 skill を参照します。
 
-公式 docs では、macOS / Linux / WSL で以下の native install が案内されています。
-
-```bash
-curl -fsSL https://claude.ai/install.sh | bash
-```
-
-Homebrew を使う場合:
-
-```bash
-brew install --cask claude-code
-```
-
-### 対話実行
-
-```bash
-cd /path/to/kaggle-ai-dlc-workflow-template
-claude
-```
-
-初回はブラウザ認証が求められます。起動後、共通の開始プロンプトを貼り付けます。
-
-### スラッシュコマンド
-
-`.claude/commands/` にプロジェクト固有のスラッシュコマンドが定義されています。セッション内で `/` に続けてコマンド名を入力することで直接呼び出せます。
-
-| コマンド | 用途 |
+| Command | 用途 |
 | --- | --- |
-| `/kaggle-starter <slug>` | Kaggle コンペ参加開始: データ・評価指標・baseline 方針を整理する |
-| `/kaggle-winning-research <slug>` | Discussion / Notebook から勝ち筋・失敗例・実装候補を抽出する |
-| `/technical-research <theme>` | 業務 PoC / 技術調査: 候補手法・実装候補・PoC スコープを整理する |
-| `/improvement-review` | 継続改善: HTML report 再生成・次の仮説選定を人間に案内する |
+| /kaggle-starter <slug> | 参加準備 |
+| /kaggle-winning-research <slug> | 解法調査 |
+| /technical-research <theme> | PoC / 技術調査 |
+| /improvement-review | 結果と次仮説のレビュー |
 
-### このテンプレートでの使い方
+Project MCP の有効化は [Claude MCP 公式資料](https://code.claude.com/docs/en/mcp) に従います。
+`.env` が自動で全 server に渡るとは限りません。秘密値は client の認証・環境変数管理を使います。
+共有設定で汎用 shell / uv command を一括許可しません。
 
-Claude Code はプロジェクトファイルを読ませながら進めやすいので、最初に以下を依頼します。
+## GitHub Copilot CLI / Kiro
 
-```text
-docs/00_project_concept.md、AGENTS.md、aidlc-docs/ を読んで、この workflow template の使い方を把握してください。
-その後、今回の目的が competition-starter / competition-winning / technical-research のどれかを確認してください。
-未確定事項があれば質問し、実装前に implementation-questionnaire.md と architecture.md を埋め、aidlc-docs/audit.md に仮定と判断を記録してください。
-```
+[Copilot CLI 公式資料](https://docs.github.com/en/copilot/concepts/agents/about-copilot-cli)、
+[Kiro CLI 公式資料](https://kiro.dev/docs/cli/) を参照し、利用中の版の help と設定表示を確認します。
+Copilot には必要なら AGENTS と該当 skill を読むよう指示してください。
+Kiro の `research-agent` は入口文書と skill の参照を提供します。
+現在の [Kiro custom agent reference](https://kiro.dev/docs/custom-agents/configuration-reference/)（CLI 3.0）では `file://` / `skill://` resources と `includeMcpJson` が案内されています。付属 agent は workspace MCP を取り込みます。旧版は公式の移行手順を確認してください。
 
-またはスラッシュコマンドを直接使います。
+## Start / Resume
 
-```text
-/kaggle-starter titanic
-```
+[プロンプト集](03_prompt_templates.md) の開始例を使うか、目的を直接伝えてください。
 
-## Kiro CLI
+- 到達点、環境、予算、未決事項を state に残す。
+- 既存の source / contract / run と次の作業を引き継ぐ。
+- API が利用できない場合は公式 Web / 手動 snapshot を代替にし、未取得範囲を記録する。
+- Agent や client を変えても、判断と実験の正本は `aidlc-docs/` と run artifacts に維持する。
 
-### インストール
+Install command や client の細かな設定は公式の最新手順を参照し、調査日時と利用版を audit に残します。
 
-公式 docs を参照してください。
+## 用語の引継ぎ
 
-### 対話実行
-
-```bash
-cd /path/to/kaggle-ai-dlc-workflow-template
-kiro-cli chat
-```
-
-Kiro CLI はプロジェクトルートの `.kiro/steering/` 配下の Markdown ファイルを自動的にコンテキストに読み込みます。このテンプレートでは `.kiro/steering/agents.md` が `AGENTS.md` への symlink になっているため、Codex と同じ指示内容が自動で適用されます。
-
-### MCP サーバー
-
-`.kiro/settings/mcp.json` に `kaggle` / `arxiv` / `huggingface` の3つの MCP サーバーが設定されています。起動後、以下で確認できます。
-
-```text
-/mcp
-```
-
-### このテンプレートでの使い方
-
-起動後、共通の開始プロンプトを貼り付けます。Kiro CLI は steering file として AGENTS.md の内容を自動読み込みしているため、追加の指示なしでワークフローに従います。
-
-Kaggle Starter を始める場合:
-
-```text
-Kaggle competition starter を実施してください。
-
-対象コンペ:
-<competition-slug>
-
-まず docs/00_project_concept.md、.agents/skills/kaggle-starter/SKILL.md、aidlc-docs/ を読んでください。
-Kaggle 情報取得は MCP 経由を優先してください。
-実装は、problem-overview.md、kaggle-starter.md、implementation-questionnaire.md、architecture.md、experiment-plan.md の骨子が揃ってから開始してください。
-```
-
-## 推奨運用
-
-### 1. テンプレート改善
-
-このリポジトリ自体を改善する場合は、まず以下を依頼します。
-
-```text
-このリポジトリは Kaggle / 技術調査向けの workflow template です。
-docs/00_project_concept.md と AGENTS.md を読み、テンプレートとして不足している docs、scripts、skills をレビューしてください。
-変更する場合は、既存の構想と整合する最小差分にしてください。
-```
-
-### 2. 新しい Kaggle コンペ
-
-```text
-Kaggle competition starter を実施してください。
-
-対象コンペ:
-<competition-slug>
-
-目的:
-コンペ概要、評価指標、データ構造、提出形式、初期 EDA / baseline 方針を aidlc-docs/ に整理し、
-baseline 実装に入れる状態にすること。
-```
-
-### 3. 業務 PoC / 技術調査
-
-```text
-General technical research を実施してください。
-
-技術テーマ:
-<technical-theme>
-
-目的:
-既存手法、実装候補、適用リスク、PoC の最小スコープを整理し、
-baseline 実装計画を aidlc-docs/ に落とすこと。
-```
-
-## 注意点
-
-- coding agent に実装を依頼する前に、必ず `aidlc-docs/inception/` の最小ドキュメントを埋める。
-- 新規コードを作る前に、`aidlc-docs/construction/implementation-questionnaire.md` と `architecture.md` でコード構成、Hydra / loguru / MLflow、Notebook 方針、Kaggle MCP / adapter 方針を確認する。
-- 外部情報を調査した場合は、日時、URL、実行コマンド、判断を `aidlc-docs/audit.md` に残す。
-- Kaggle の rules、外部データ可否、Internet access 可否は、実装前に確認する。
-- Kaggle 認証が必要な操作を行う前に、`docs/04_kaggle_auth_setup.md` を確認する。
-- Notebook や GitHub 実装を流用する場合は、ライセンスと前提データ構造を確認する。
-
-## 参考公式ドキュメント
-
-- OpenAI Codex CLI: https://developers.openai.com/codex/cli
-- GitHub Copilot CLI quickstart: https://docs.github.com/en/copilot/how-tos/copilot-cli/cli-getting-started
-- GitHub Copilot CLI command reference: https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference
-- Claude Code quickstart: https://code.claude.com/docs/en/quickstart
+開始・再開時は問題設定文書の「用語と名称」を読む。専門用語は初出で説明し、独自の呼び名を増やさない。
+報告前に、何を変え、何と比べ、何が分かったかを具体的に書けているか確認する。
+[用語と説明のガイド](07_terminology.md) に定義の記録方法と例を示す。
